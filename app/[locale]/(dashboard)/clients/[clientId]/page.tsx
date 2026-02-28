@@ -6,15 +6,15 @@ import { getDictionary } from '@/lib/get-dictionaries';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   FileText,
   MessageCircle,
   Monitor,
   Send,
-  ClipboardList,
 } from 'lucide-react';
 import Link from 'next/link';
+import ClientStatusSelect from '@/components/clients/client-status-select';
+import ClientInfoEditor from '@/components/clients/client-info-editor';
 
 interface ClientPageProps {
   params: Promise<{
@@ -22,16 +22,6 @@ interface ClientPageProps {
     clientId: string;
   }>;
 }
-
-const STATUS_LABELS: Record<string, string> = {
-  onboarding: 'Onboarding',
-  mvp_generated: 'MVP Généré',
-  demo_scheduled: 'Démo Prévue',
-  demo_done: 'Démo Terminée',
-  handoff_sent: 'Handoff Envoyé',
-  in_production: 'En Production',
-  closed: 'Clôturé',
-};
 
 export default async function ClientPage({ params }: ClientPageProps) {
   const { locale, clientId } = await params;
@@ -84,7 +74,7 @@ export default async function ClientPage({ params }: ClientPageProps) {
         <div>
           <h1 className="text-3xl font-bold">{client.company_name}</h1>
           <div className="flex items-center gap-3 mt-2">
-            <Badge>{STATUS_LABELS[client.status] || client.status}</Badge>
+            <ClientStatusSelect clientId={clientId} currentStatus={client.status} />
             <span className="text-sm text-muted-foreground">{client.sector}</span>
             {client.contact_email && (
               <span className="text-sm text-muted-foreground">{client.contact_email}</span>
@@ -131,8 +121,20 @@ export default async function ClientPage({ params }: ClientPageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Info */}
         <Card className="lg:col-span-2">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Informations</CardTitle>
+            <ClientInfoEditor
+              clientId={clientId}
+              initialData={{
+                company_name: client.company_name,
+                contact_name: client.contact_name,
+                contact_email: client.contact_email,
+                sector: client.sector,
+                problem_description: client.problem_description,
+                budget_range: client.budget_range,
+                timeline: client.timeline,
+              }}
+            />
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
