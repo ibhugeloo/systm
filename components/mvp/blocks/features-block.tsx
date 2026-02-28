@@ -19,7 +19,7 @@ export function FeaturesBlock({ block }: FeaturesBlockProps) {
 
   return (
     <div className="h-full flex flex-col p-8 bg-white">
-      <h2 className="text-3xl font-bold mb-2">{content.title || 'Features'}</h2>
+      <h2 className="text-3xl font-bold mb-2">{content.title || 'Fonctionnalités'}</h2>
       <p className="text-slate-600 mb-8">{content.description || ''}</p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-1">
         {(content.items || []).map((feature: { icon?: string; title: string; description: string }, idx: number) => {

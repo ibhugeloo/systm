@@ -32,28 +32,28 @@ const MvpComponentPalette: React.FC<MvpComponentPaletteProps> = ({
   onAddBlock,
 }) => {
   const items: PaletteItem[] = [
-    { type: "hero", label: "Hero", icon: Layout, category: "Layout" },
-    { type: "features", label: "Features", icon: Grid3x3, category: "Grid" },
-    { type: "pricing", label: "Pricing", icon: DollarSign, category: "Pricing" },
+    { type: "hero", label: "Héros", icon: Layout, category: "Layout" },
+    { type: "features", label: "Fonctionnalités", icon: Grid3x3, category: "Grid" },
+    { type: "pricing", label: "Tarification", icon: DollarSign, category: "Pricing" },
     {
       type: "testimonials",
-      label: "Testimonials",
+      label: "Témoignages",
       icon: MessageSquare,
       category: "Social",
     },
-    { type: "cta", label: "CTA", icon: Megaphone, category: "CTA" },
-    { type: "dashboard", label: "Dashboard", icon: BarChart3, category: "Data" },
-    { type: "form", label: "Form", icon: FileText, category: "Data" },
-    { type: "data-table", label: "Data Table", icon: Table, category: "Data" },
-    { type: "stats", label: "Stats", icon: TrendingUp, category: "Data" },
-    { type: "custom", label: "Custom", icon: Code, category: "Other" },
+    { type: "cta", label: "Appel à l'action", icon: Megaphone, category: "CTA" },
+    { type: "dashboard", label: "Tableau de bord", icon: BarChart3, category: "Data" },
+    { type: "form", label: "Formulaire", icon: FileText, category: "Data" },
+    { type: "data-table", label: "Tableau de données", icon: Table, category: "Data" },
+    { type: "stats", label: "Statistiques", icon: TrendingUp, category: "Data" },
+    { type: "custom", label: "Personnalisé", icon: Code, category: "Other" },
   ];
 
   const categories = ["Layout", "Grid", "Pricing", "Social", "CTA", "Data", "Other"] as const;
 
   return (
     <div className="w-64 border-r border-gray-200 bg-white p-4 overflow-auto h-screen">
-      <h2 className="font-semibold text-lg mb-4">Components</h2>
+      <h2 className="font-semibold text-lg mb-4">Composants</h2>
 
       {categories.map((category) => {
         const categoryItems = items.filter((item) => item.category === category);
@@ -98,7 +98,7 @@ const MvpComponentPalette: React.FC<MvpComponentPaletteProps> = ({
 
       <div className="mt-8 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <p className="text-xs text-blue-700">
-          Drag and drop components onto the canvas or click to add.
+          Glissez-déposez les composants sur le canvas ou cliquez pour ajouter.
         </p>
       </div>
     </div>

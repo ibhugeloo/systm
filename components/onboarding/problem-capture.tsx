@@ -10,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { OnboardingStep1Data } from '@/types/onboarding';
 
@@ -25,15 +24,15 @@ interface ProblemCaptureProps {
   errors?: Record<string, string[]>;
 }
 
-const SECTOR_OPTIONS = [
-  { value: 'tech', label: 'Technology' },
-  { value: 'finance', label: 'Finance' },
-  { value: 'healthcare', label: 'Healthcare' },
-  { value: 'education', label: 'Education' },
-  { value: 'retail', label: 'Retail' },
-  { value: 'logistics', label: 'Logistics' },
-  { value: 'media', label: 'Media' },
-  { value: 'other', label: 'Other' },
+const SECTOR_KEYS = [
+  { value: 'tech', key: 'sector_tech' },
+  { value: 'finance', key: 'sector_finance' },
+  { value: 'healthcare', key: 'sector_healthcare' },
+  { value: 'education', key: 'sector_education' },
+  { value: 'retail', key: 'sector_retail' },
+  { value: 'logistics', key: 'sector_logistics' },
+  { value: 'media', key: 'sector_media' },
+  { value: 'other', key: 'sector_other' },
 ];
 
 export function ProblemCapture({
@@ -65,13 +64,6 @@ export function ProblemCapture({
     [data, onChange]
   );
 
-  const handleMainObjectiveChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      onChange({ ...data, main_objective: e.target.value });
-    },
-    [data, onChange]
-  );
-
   const getFieldError = (field: string): string | undefined => {
     const fieldErrors = errors[field];
     return fieldErrors?.[0];
@@ -81,98 +73,91 @@ export function ProblemCapture({
   const minLength = 50;
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>{dict.step_1}</CardTitle>
-        <CardDescription>{dict.subtitle}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Company Name */}
-        <div className="space-y-2">
-          <label htmlFor="company_name" className="block text-sm font-medium">
-            {dict.company_name_label}
-            <span className="text-red-500 ml-1">*</span>
-          </label>
-          <Input
-            id="company_name"
-            placeholder={dict.company_name_placeholder}
-            value={data.company_name || ''}
-            onChange={handleCompanyNameChange}
-            className={cn(getFieldError('company_name') && 'border-red-500 focus-visible:ring-red-500')}
-          />
-          {getFieldError('company_name') && (
-            <p className="text-sm text-red-500">{getFieldError('company_name')}</p>
+    <div className="space-y-6">
+      {/* Company Name */}
+      <div className="space-y-2">
+        <label htmlFor="company_name" className="block text-sm font-medium">
+          {dict.company_name_label}
+          <span className="text-destructive ml-1">*</span>
+        </label>
+        <Input
+          id="company_name"
+          placeholder={dict.company_name_placeholder}
+          value={data.company_name || ''}
+          onChange={handleCompanyNameChange}
+          className={cn(
+            'h-11',
+            getFieldError('company_name') && 'border-destructive focus-visible:ring-destructive'
           )}
-        </div>
+        />
+        {getFieldError('company_name') && (
+          <p className="text-sm text-destructive">{getFieldError('company_name')}</p>
+        )}
+      </div>
 
-        {/* Sector */}
-        <div className="space-y-2">
-          <label htmlFor="sector" className="block text-sm font-medium">
-            {dict.sector_label}
-            <span className="text-red-500 ml-1">*</span>
-          </label>
-          <Select value={data.sector || ''} onValueChange={handleSectorChange}>
-            <SelectTrigger
-              id="sector"
-              className={cn(getFieldError('sector') && 'border-red-500 focus-visible:ring-red-500')}
-            >
-              <SelectValue placeholder={dict.sector_placeholder} />
-            </SelectTrigger>
-            <SelectContent>
-              {SECTOR_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {getFieldError('sector') && (
-            <p className="text-sm text-red-500">{getFieldError('sector')}</p>
-          )}
-        </div>
+      {/* Sector */}
+      <div className="space-y-2">
+        <label htmlFor="sector" className="block text-sm font-medium">
+          {dict.sector_label}
+          <span className="text-destructive ml-1">*</span>
+        </label>
+        <Select value={data.sector || ''} onValueChange={handleSectorChange}>
+          <SelectTrigger
+            id="sector"
+            className={cn(
+              'h-11',
+              getFieldError('sector') && 'border-destructive focus-visible:ring-destructive'
+            )}
+          >
+            <SelectValue placeholder={dict.sector_placeholder} />
+          </SelectTrigger>
+          <SelectContent>
+            {SECTOR_KEYS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {dict[option.key]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {getFieldError('sector') && (
+          <p className="text-sm text-destructive">{getFieldError('sector')}</p>
+        )}
+      </div>
 
-        {/* Problem Description */}
-        <div className="space-y-2">
-          <div className="flex justify-between items-baseline">
-            <label htmlFor="problem_description" className="block text-sm font-medium">
-              {dict.problem_description_label}
-              <span className="text-red-500 ml-1">*</span>
-            </label>
-            <span className={cn('text-xs', problemDescLength < minLength ? 'text-amber-600' : 'text-muted-foreground')}>
-              {problemDescLength}/{minLength}
-            </span>
-          </div>
-          <Textarea
-            id="problem_description"
-            placeholder={dict.problem_description_placeholder}
-            value={data.problem_description || ''}
-            onChange={handleProblemDescriptionChange}
-            className={cn(getFieldError('problem_description') && 'border-red-500 focus-visible:ring-red-500')}
-            minLength={50}
-          />
-          {getFieldError('problem_description') && (
-            <p className="text-sm text-red-500">{getFieldError('problem_description')}</p>
-          )}
-        </div>
-
-        {/* Main Objective */}
-        <div className="space-y-2">
-          <label htmlFor="main_objective" className="block text-sm font-medium">
-            {dict.main_objective_label}
-            <span className="text-red-500 ml-1">*</span>
+      {/* Problem Description */}
+      <div className="space-y-2">
+        <div className="flex justify-between items-baseline">
+          <label htmlFor="problem_description" className="block text-sm font-medium">
+            {dict.problem_description_label}
+            <span className="text-destructive ml-1">*</span>
           </label>
-          <Input
-            id="main_objective"
-            placeholder={dict.main_objective_placeholder}
-            value={data.main_objective || ''}
-            onChange={handleMainObjectiveChange}
-            className={cn(getFieldError('main_objective') && 'border-red-500 focus-visible:ring-red-500')}
-          />
-          {getFieldError('main_objective') && (
-            <p className="text-sm text-red-500">{getFieldError('main_objective')}</p>
-          )}
+          <span
+            className={cn(
+              'text-xs font-medium tabular-nums',
+              problemDescLength >= minLength
+                ? 'text-emerald-600 dark:text-emerald-400'
+                : 'text-amber-600 dark:text-amber-400'
+            )}
+          >
+            {problemDescLength}/{minLength}
+          </span>
         </div>
-      </CardContent>
-    </Card>
+        <Textarea
+          id="problem_description"
+          placeholder={dict.problem_description_placeholder}
+          value={data.problem_description || ''}
+          onChange={handleProblemDescriptionChange}
+          className={cn(
+            'min-h-[120px] resize-none',
+            getFieldError('problem_description') && 'border-destructive focus-visible:ring-destructive'
+          )}
+          minLength={50}
+        />
+        {getFieldError('problem_description') && (
+          <p className="text-sm text-destructive">{getFieldError('problem_description')}</p>
+        )}
+      </div>
+
+    </div>
   );
 }

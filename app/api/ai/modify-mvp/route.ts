@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
 import { callClaude } from '@/lib/ai/claude';
 import { getMvpModificationPrompt } from '@/lib/ai/prompts/mvp-modification';
 import { MvpCanvas } from '@/types/mvp';
@@ -8,16 +7,14 @@ import { normalizeCanvas } from '@/lib/ai/normalize-canvas';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { mvpId, modification, currentCanvas } = body;
+    const { modification, currentCanvas } = body;
 
-    if (!mvpId || !modification || !currentCanvas) {
+    if (!modification || !currentCanvas) {
       return NextResponse.json(
-        { error: 'mvpId, modification, and currentCanvas are required' },
+        { error: 'modification and currentCanvas are required' },
         { status: 400 }
       );
     }
-
-    const supabase = await createClient();
 
     // Generate modification prompt
     const prompt = getMvpModificationPrompt(
@@ -25,7 +22,7 @@ export async function POST(request: NextRequest) {
       modification
     );
 
-    // Call Claude (non-streaming since we need the full response)
+    // Call Claude
     const fullResponse = await callClaude(
       prompt,
       `Apply this modification: ${modification}`
@@ -45,19 +42,6 @@ export async function POST(request: NextRequest) {
         { error: 'Failed to parse AI modification' },
         { status: 500 }
       );
-    }
-
-    // Update the MVP in database
-    const { error: updateError } = await supabase
-      .from('mvps')
-      .update({
-        canvas_data: modifiedCanvas,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', mvpId);
-
-    if (updateError) {
-      console.error('Failed to update MVP:', updateError);
     }
 
     return NextResponse.json({

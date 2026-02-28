@@ -19,7 +19,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    label: 'Dashboard',
+    label: 'Tableau de bord',
     href: '/dashboard',
     icon: LayoutDashboard,
   },
@@ -29,13 +29,13 @@ const navItems: NavItem[] = [
     icon: Users,
   },
   {
-    label: 'Team',
+    label: 'Équipe',
     href: '/team',
     icon: UserCog,
     adminOnly: true,
   },
   {
-    label: 'Settings',
+    label: 'Paramètres',
     href: '/settings',
     icon: Settings,
   },
@@ -86,7 +86,7 @@ export function DashboardSidebar() {
           </Link>
 
           {/* Navigation */}
-          <nav className="flex-1 space-y-2">
+          <nav className="flex-1 space-y-1">
             {visibleItems.map((item) => {
               const isActive = pathname.includes(item.href);
               const Icon = item.icon;
@@ -97,13 +97,13 @@ export function DashboardSidebar() {
                   href={item.href}
                   onClick={handleNavClick}
                   className={cn(
-                    'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                    'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
                     isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                   )}
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-4.5 w-4.5" />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -117,7 +117,7 @@ export function DashboardSidebar() {
                 <Avatar className="h-10 w-10">
                   <AvatarImage
                     src={profile.avatar_url || undefined}
-                    alt={profile.full_name || 'User'}
+                    alt={profile.full_name || 'Utilisateur'}
                   />
                   <AvatarFallback>
                     {profile.full_name
@@ -137,11 +137,11 @@ export function DashboardSidebar() {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start gap-2"
+              className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
               onClick={handleSignOut}
             >
               <LogOut className="h-4 w-4" />
-              Sign out
+              Déconnexion
             </Button>
           </div>
         </div>

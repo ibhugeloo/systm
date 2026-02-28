@@ -11,6 +11,8 @@ import {
   List,
   Link2,
   Code,
+  Check,
+  Loader,
 } from "lucide-react"
 import HandoffPreview from "./handoff-preview"
 
@@ -28,6 +30,7 @@ export default function HandoffEditor({
   const [content, setContent] = useState(initialContent)
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<string | null>(null)
+  const [justSaved, setJustSaved] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const supabase = createClient()
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -45,6 +48,8 @@ export default function HandoffEditor({
       if (error) throw error
 
       setLastSaved(new Date().toISOString())
+      setJustSaved(true)
+      setTimeout(() => setJustSaved(false), 2000)
     } catch (error) {
       console.error("Failed to auto-save:", error)
     } finally {
@@ -92,58 +97,53 @@ export default function HandoffEditor({
   }
 
   const markdownTools = [
-    {
-      label: "Gras",
-      icon: Bold,
-      before: "**",
-      after: "**",
-    },
-    {
-      label: "Italique",
-      icon: Italic,
-      before: "_",
-      after: "_",
-    },
-    {
-      label: "Titre",
-      icon: Heading2,
-      before: "## ",
-    },
-    {
-      label: "Liste",
-      icon: List,
-      before: "- ",
-    },
-    {
-      label: "Lien",
-      icon: Link2,
-      before: "[texte](url)",
-    },
-    {
-      label: "Code",
-      icon: Code,
-      before: "`",
-      after: "`",
-    },
+    { label: "Gras", icon: Bold, before: "**", after: "**" },
+    { label: "Italique", icon: Italic, before: "_", after: "_" },
+    { label: "Titre", icon: Heading2, before: "## " },
+    { label: "Liste", icon: List, before: "- " },
+    { label: "Lien", icon: Link2, before: "[texte](url)" },
+    { label: "Code", icon: Code, before: "`", after: "`" },
   ]
 
   return (
     <div className="grid grid-cols-2 gap-4 h-full">
       {/* Editor */}
       <div className="flex flex-col space-y-2">
-        <div className="flex gap-1 flex-wrap bg-gray-100 dark:bg-gray-800 p-2 rounded-lg">
-          {markdownTools.map((tool) => (
-            <Button
-              key={tool.label}
-              variant="ghost"
-              size="sm"
-              onClick={() => insertMarkdown(tool.before, tool.after)}
-              title={tool.label}
-              className="h-8 w-8 p-0"
-            >
-              <tool.icon className="h-4 w-4" />
-            </Button>
-          ))}
+        {/* Toolbar */}
+        <div className="flex items-center justify-between bg-muted/50 border rounded-xl px-3 py-1.5">
+          <div className="flex gap-0.5">
+            {markdownTools.map((tool) => (
+              <Button
+                key={tool.label}
+                variant="ghost"
+                size="sm"
+                onClick={() => insertMarkdown(tool.before, tool.after)}
+                title={tool.label}
+                className="h-8 w-8 p-0 rounded-lg hover:bg-background"
+              >
+                <tool.icon className="h-4 w-4" />
+              </Button>
+            ))}
+          </div>
+
+          {/* Save status */}
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            {isSaving ? (
+              <>
+                <Loader className="h-3 w-3 animate-spin" />
+                <span>Enregistrement...</span>
+              </>
+            ) : justSaved ? (
+              <>
+                <Check className="h-3 w-3 text-emerald-500" />
+                <span className="text-emerald-600">Enregistré</span>
+              </>
+            ) : lastSaved ? (
+              <span>
+                Enregistré à {new Date(lastSaved).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+              </span>
+            ) : null}
+          </div>
         </div>
 
         <Textarea
@@ -151,19 +151,12 @@ export default function HandoffEditor({
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Écrivez votre handoff en Markdown..."
-          className="flex-1 font-mono text-xs resize-none"
+          className="flex-1 font-mono text-xs resize-none rounded-xl border-muted"
         />
-
-        {lastSaved && (
-          <div className="text-xs text-gray-500">
-            Dernier enregistrement:{" "}
-            {new Date(lastSaved).toLocaleTimeString("fr-FR")}
-          </div>
-        )}
       </div>
 
       {/* Preview */}
-      <div className="overflow-auto border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+      <div className="overflow-auto border rounded-xl p-5 bg-card">
         <HandoffPreview markdownContent={content} />
       </div>
     </div>

@@ -10,12 +10,7 @@ interface Dictionary {
   portal: Record<string, string>;
 }
 
-export async function getDictionary(locale: Locale): Promise<Dictionary> {
-  try {
-    const dictionary = await import(`@/dictionaries/${locale}.json`);
-    return dictionary.default as Dictionary;
-  } catch (error) {
-    console.error(`Failed to load dictionary for locale: ${locale}`, error);
-    throw new Error(`Dictionary not found for locale: ${locale}`);
-  }
+export async function getDictionary(_locale?: Locale): Promise<Dictionary> {
+  const dictionary = await import('@/dictionaries/fr.json');
+  return dictionary.default as Dictionary;
 }

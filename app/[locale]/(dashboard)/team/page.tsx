@@ -13,7 +13,7 @@ interface TeamPageProps {
 export default async function TeamPage({ params }: TeamPageProps) {
   const { locale } = await params;
   const supabase = await createClient();
-  const dict = await getDictionary(locale as 'fr' | 'en');
+  const dict = await getDictionary(locale as 'fr');
 
   // Fetch team members
   const { data: members } = await supabase

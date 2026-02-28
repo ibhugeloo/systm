@@ -14,7 +14,7 @@ export function TestimonialsBlock({ block }: TestimonialsBlockProps) {
 
   return (
     <div className="h-full flex flex-col p-8 bg-slate-50">
-      <h2 className="text-3xl font-bold text-center mb-12">{content.title || 'Testimonials'}</h2>
+      <h2 className="text-3xl font-bold text-center mb-12">{content.title || 'Témoignages'}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-1">
         {(content.testimonials || []).map((testimonial, idx) => (
           <Card key={idx} className="p-6 flex flex-col justify-between">

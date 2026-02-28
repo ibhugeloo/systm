@@ -14,7 +14,7 @@ export function PricingBlock({ block }: PricingBlockProps) {
 
   return (
     <div className="h-full flex flex-col p-8 bg-white">
-      <h2 className="text-3xl font-bold text-center mb-12">{content.title || 'Pricing'}</h2>
+      <h2 className="text-3xl font-bold text-center mb-12">{content.title || 'Tarification'}</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 flex-1">
         {(content.plans || []).map((plan, idx) => (
           <Card
@@ -27,7 +27,7 @@ export function PricingBlock({ block }: PricingBlockProps) {
             <p className="text-slate-600 mb-6 text-sm">{plan.description}</p>
             <div className="text-4xl font-bold mb-8">
               {plan.price}
-              <span className="text-lg text-slate-600">/mo</span>
+              <span className="text-lg text-slate-600">/mois</span>
             </div>
             <div className="flex-1 space-y-3 mb-8">
               {(plan.features || []).map((feature, fidx) => (
@@ -38,7 +38,7 @@ export function PricingBlock({ block }: PricingBlockProps) {
               ))}
             </div>
             <Button className="w-full" variant={idx === 1 ? 'default' : 'outline'}>
-              Choose Plan
+              Choisir ce plan
             </Button>
           </Card>
         ))}

@@ -11,12 +11,12 @@ export const STATUS_COLUMNS: Client['status'][] = [
 ];
 
 export const STATUS_LABELS: Record<Client['status'], string> = {
-  onboarding: 'Onboarding',
-  mvp_generated: 'MVP Généré',
-  demo_scheduled: 'Démo Prévue',
-  demo_done: 'Démo Terminée',
-  handoff_sent: 'Handoff Envoyé',
-  in_production: 'En Production',
+  onboarding: 'Intégration',
+  mvp_generated: 'MVP généré',
+  demo_scheduled: 'Démo prévue',
+  demo_done: 'Démo terminée',
+  handoff_sent: 'Remise envoyée',
+  in_production: 'En production',
   closed: 'Clôturé',
 };
 

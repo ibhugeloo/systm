@@ -11,7 +11,7 @@ export function DataTableBlock({ block }: DataTableBlockProps) {
 
   return (
     <div className="h-full flex flex-col p-6 bg-white overflow-auto">
-      <h2 className="text-xl font-bold mb-4">{content.title || 'Data Table'}</h2>
+      <h2 className="text-xl font-bold mb-4">{content.title || 'Tableau de données'}</h2>
       <div className="overflow-x-auto flex-1">
         <table className="w-full text-sm">
           <thead>
@@ -44,7 +44,7 @@ export function DataTableBlock({ block }: DataTableBlockProps) {
       </div>
       {(content.rows || []).length > 5 && (
         <p className="text-xs text-slate-500 mt-2">
-          Showing 5 of {content.rows!.length} rows
+          Affichage de 5 sur {content.rows!.length} lignes
         </p>
       )}
     </div>

@@ -3,7 +3,7 @@
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Circle } from 'lucide-react';
+import { CheckCircle2, Circle } from 'lucide-react';
 
 interface ProjectStatusProps {
   status: string;
@@ -30,38 +30,61 @@ export default function ProjectStatus({ status, companyName }: ProjectStatusProp
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle>{companyName}</CardTitle>
-          <Badge>{STEPS[currentIndex]?.label || status}</Badge>
+          <Badge className="text-xs">{STEPS[currentIndex]?.label || status}</Badge>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-5">
         <div>
-          <div className="flex items-center justify-between text-sm mb-1">
+          <div className="flex items-center justify-between text-sm mb-2">
             <span className="text-muted-foreground">Progression</span>
-            <span className="font-medium">{progress}%</span>
+            <span className="font-semibold">{progress}%</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className="h-2.5" />
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2">
           {STEPS.map((step, index) => {
             const isCompleted = index <= currentIndex;
             const isCurrent = index === currentIndex;
 
             return (
-              <div key={step.key} className="flex items-center gap-3">
+              <div
+                key={step.key}
+                className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${
+                  isCurrent ? 'bg-primary/5' : ''
+                }`}
+              >
                 {isCompleted ? (
-                  <CheckCircle className={`h-5 w-5 flex-shrink-0 ${isCurrent ? 'text-primary' : 'text-green-500'}`} />
+                  <div className={`h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    isCurrent
+                      ? 'bg-primary text-white shadow-sm shadow-primary/30'
+                      : 'bg-emerald-500 text-white'
+                  }`}>
+                    {isCurrent ? (
+                      <Circle className="h-3 w-3" />
+                    ) : (
+                      <CheckCircle2 className="h-4 w-4" />
+                    )}
+                  </div>
                 ) : (
-                  <Circle className="h-5 w-5 flex-shrink-0 text-gray-300" />
+                  <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                    <Circle className="h-3 w-3 text-muted-foreground/50" />
+                  </div>
                 )}
                 <div>
-                  <p className={`text-sm ${isCurrent ? 'font-semibold' : isCompleted ? 'text-muted-foreground' : 'text-muted-foreground/50'}`}>
+                  <p className={`text-sm ${
+                    isCurrent ? 'font-semibold' : isCompleted ? 'text-muted-foreground' : 'text-muted-foreground/50'
+                  }`}>
                     {step.label}
                   </p>
-                  <p className="text-xs text-muted-foreground">{step.description}</p>
+                  <p className={`text-xs ${
+                    isCurrent ? 'text-muted-foreground' : 'text-muted-foreground/50'
+                  }`}>
+                    {step.description}
+                  </p>
                 </div>
               </div>
             );

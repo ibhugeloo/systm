@@ -139,7 +139,7 @@ export default function ClientInfoEditor({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="timeline">Timeline</Label>
+              <Label htmlFor="timeline">Délai</Label>
               <Input
                 id="timeline"
                 value={formData.timeline}

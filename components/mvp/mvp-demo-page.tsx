@@ -60,7 +60,7 @@ export function MvpDemoPage({
       <Sheet open={showConversation} onOpenChange={setShowConversation}>
         <SheetContent side="right" className="w-96 p-0">
           <SheetHeader className="px-6 pt-6 pb-4 border-b">
-            <SheetTitle>Conversation with {clientName}</SheetTitle>
+            <SheetTitle>Conversation avec {clientName}</SheetTitle>
           </SheetHeader>
           <div className="p-4 space-y-3 overflow-auto h-full">
             {conversation.messages.map((msg) => (

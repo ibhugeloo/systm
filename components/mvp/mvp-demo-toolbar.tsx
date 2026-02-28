@@ -37,7 +37,7 @@ export function MvpDemoToolbar({
       <div className="bg-white rounded-lg shadow-xl border border-slate-200 p-4 w-96 max-w-[calc(100vw-32px)]">
         {/* Title */}
         <p className="text-xs font-semibold text-slate-500 mb-3 block">
-          Quick Modifications
+          Modifications rapides
         </p>
 
         {/* Input Form */}
@@ -72,14 +72,14 @@ export function MvpDemoToolbar({
           className="w-full gap-2"
         >
           <MessageCircle size={16} />
-          Chat with {clientName}
+          Discuter avec {clientName}
         </Button>
 
         {/* Status */}
         {isProcessing && (
           <p className="text-xs text-slate-500 mt-3 flex items-center gap-2">
             <Loader size={12} className="animate-spin" />
-            AI is processing...
+            L&apos;IA traite votre demande...
           </p>
         )}
       </div>

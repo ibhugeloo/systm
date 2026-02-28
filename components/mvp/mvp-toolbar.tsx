@@ -57,7 +57,7 @@ const MvpToolbar: React.FC<MvpToolbarProps> = ({
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to modify MVP");
+      if (!response.ok) throw new Error("Échec de la modification du MVP");
 
       const result = await response.json();
       let updatedCanvas = canvas;
@@ -177,7 +177,7 @@ const MvpToolbar: React.FC<MvpToolbarProps> = ({
         {/* Add Block Dropdown */}
         <Select onValueChange={(value) => handleAddBlock(value as MvpBlock["type"])}>
           <SelectTrigger className="w-40">
-            <SelectValue placeholder="Add Block" />
+            <SelectValue placeholder="Ajouter un bloc" />
           </SelectTrigger>
           <SelectContent>
             {blockTypes.map((type) => (
@@ -194,7 +194,7 @@ const MvpToolbar: React.FC<MvpToolbarProps> = ({
           size="sm"
           onClick={handleDeleteSelected}
           disabled={!selectedBlockId}
-          title="Delete selected block"
+          title="Supprimer le bloc sélectionné"
         >
           <Trash2 className="h-4 w-4" />
         </Button>
@@ -205,7 +205,7 @@ const MvpToolbar: React.FC<MvpToolbarProps> = ({
           size="sm"
           onClick={handleUndo}
           disabled={historyIndex === 0}
-          title="Undo"
+          title="Annuler"
         >
           <Undo2 className="h-4 w-4" />
         </Button>
@@ -214,7 +214,7 @@ const MvpToolbar: React.FC<MvpToolbarProps> = ({
           size="sm"
           onClick={handleRedo}
           disabled={historyIndex === history.length - 1}
-          title="Redo"
+          title="Refaire"
         >
           <Redo2 className="h-4 w-4" />
         </Button>

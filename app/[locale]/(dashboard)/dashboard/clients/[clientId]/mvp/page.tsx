@@ -27,7 +27,7 @@ export default async function MvpPage({ params }: MvpPageProps) {
     notFound();
   }
 
-  const dict = await getDictionary(locale as "fr" | "en");
+  const dict = await getDictionary(locale as "fr");
 
   // Fetch MVP for this client
   const { data: mvp } = await supabase

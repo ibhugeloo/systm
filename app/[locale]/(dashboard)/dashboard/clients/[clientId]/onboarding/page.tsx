@@ -5,6 +5,7 @@ import { getDictionary } from '@/lib/get-dictionaries';
 import { createClient as createSupabaseServer } from '@/lib/supabase/server';
 import { OnboardingForm } from '@/components/onboarding/onboarding-form';
 import { Locale } from '@/lib/i18n-config';
+import { ChevronRight } from 'lucide-react';
 
 
 interface OnboardingPageProps {
@@ -45,34 +46,39 @@ export default async function OnboardingPage({
   const effectiveClientId = isNewClient ? undefined : clientId;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/10 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/30 py-10 px-4">
       <div className="container max-w-4xl mx-auto">
-        {/* Breadcrumb Navigation */}
-        <nav className="flex items-center gap-2 text-sm mb-8 text-muted-foreground">
-          <a href={`/${locale}/dashboard`} className="hover:text-foreground transition-colors">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-1.5 text-sm mb-10">
+          <a
+            href={`/${locale}/dashboard`}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
             {dictionary.dashboard.title}
           </a>
-          <span>/</span>
-          <a href={`/${locale}/clients`} className="hover:text-foreground transition-colors">
+          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" />
+          <a
+            href={`/${locale}/clients`}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
             {dictionary.dashboard.clients}
           </a>
-          <span>/</span>
+          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" />
           <span className="text-foreground font-medium">{dictionary.onboarding.title}</span>
         </nav>
 
         {/* Header */}
-        <div className="mb-12">
+        <div className="text-center mb-12">
           <h1 className="text-3xl font-bold tracking-tight mb-2">
             {dictionary.onboarding.title}
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-muted-foreground text-lg max-w-md mx-auto">
             {dictionary.onboarding.subtitle}
           </p>
         </div>
 
         {/* Form */}
         <OnboardingForm
-          clientId={effectiveClientId}
           locale={locale}
           dictionary={dictionary}
           initialData={initialData}

@@ -1,23 +1,18 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { ProblemCapture } from './problem-capture';
+import { MvpStep } from './mvp-step';
 import { TechConstraints } from './tech-constraints';
-import { BudgetTimeline } from './budget-timeline';
-import { ReviewSubmit } from './review-submit';
+import { ProjectScoping } from './project-scoping';
+import { PaymentStep } from './payment-step';
 import { cn } from '@/lib/utils';
-import { OnboardingFormData } from '@/types/onboarding';
-import {
-  Step1Schema,
-  Step2Schema,
-  Step3Schema,
-  Step4Schema,
-} from '@/lib/validation/onboarding-schemas';
-import { createClient as createSupabaseClient } from '@/lib/supabase/client';
+import { OnboardingFormData, AiEstimation } from '@/types/onboarding';
+import { MvpCanvas } from '@/types/mvp';
+import { Step1Schema, Step3Schema } from '@/lib/validation/onboarding-schemas';
 import { ZodError } from 'zod';
+import { Building2, Sparkles, Cpu, ClipboardCheck, CreditCard, ChevronRight, ChevronLeft } from 'lucide-react';
 
 interface Dictionary {
   onboarding: Record<string, string>;
@@ -25,57 +20,54 @@ interface Dictionary {
 }
 
 interface OnboardingFormProps {
-  clientId?: string;
   locale: string;
   dictionary: Dictionary;
   initialData?: Partial<OnboardingFormData>;
 }
 
+type StepNumber = 1 | 2 | 3 | 4 | 5;
 type FormErrors = Record<string, string[]>;
 
-const STEPS = [
-  { number: 1, label: 'Company Details' },
-  { number: 2, label: 'Tech Stack' },
-  { number: 3, label: 'Budget & Timeline' },
-  { number: 4, label: 'Review & Submit' },
-];
+const STEP_ICONS = [Building2, Sparkles, Cpu, ClipboardCheck, CreditCard];
 
 export function OnboardingForm({
-  clientId,
-  locale,
   dictionary,
   initialData = {},
 }: OnboardingFormProps): React.ReactElement {
-  const router = useRouter();
   const dict = dictionary.onboarding;
   const commonDict = dictionary.common;
 
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
+  const steps = [
+    { number: 1, label: dict.stepper_label_1, desc: dict.step_1_desc },
+    { number: 2, label: dict.stepper_label_2, desc: dict.step_2_desc },
+    { number: 3, label: dict.stepper_label_3, desc: dict.step_3_desc },
+    { number: 4, label: dict.stepper_label_4, desc: dict.step_4_desc },
+    { number: 5, label: dict.stepper_label_5, desc: dict.step_5_desc },
+  ];
+
+  const [currentStep, setCurrentStep] = useState<StepNumber>(1);
   const [formData, setFormData] = useState<Partial<OnboardingFormData>>(initialData);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // MVP state (tout en local, pas de Supabase)
+  const [canvas, setCanvas] = useState<MvpCanvas | null>(null);
+  const [estimation, setEstimation] = useState<AiEstimation | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const validateStep = useCallback(
-    (step: 1 | 2 | 3): boolean => {
+    (step: StepNumber): boolean => {
       try {
         if (step === 1) {
           Step1Schema.parse({
             company_name: formData.company_name,
             sector: formData.sector,
             problem_description: formData.problem_description,
-            main_objective: formData.main_objective,
-          });
-        } else if (step === 2) {
-          Step2Schema.parse({
-            existing_stack: formData.existing_stack,
-            tech_constraints: formData.tech_constraints,
-            required_integrations: formData.required_integrations,
           });
         } else if (step === 3) {
           Step3Schema.parse({
-            budget_range: formData.budget_range,
-            desired_timeline: formData.desired_timeline,
-            priority: formData.priority,
+            existing_stack: formData.existing_stack,
+            tech_constraints: formData.tech_constraints,
+            required_integrations: formData.required_integrations,
           });
         }
         setErrors({});
@@ -102,192 +94,139 @@ export function OnboardingForm({
     []
   );
 
-  const handleNext = useCallback((): void => {
-    if (currentStep < 4 && validateStep(currentStep as 1 | 2 | 3)) {
-      setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4);
-    }
-  }, [currentStep, validateStep]);
+  const handleCanvasUpdate = useCallback(
+    (updatedCanvas: MvpCanvas) => {
+      setCanvas(updatedCanvas);
+    },
+    []
+  );
 
-  const handleBack = useCallback((): void => {
-    if (currentStep > 1) {
-      setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3 | 4);
-    }
-  }, [currentStep]);
-
-  const handleEdit = useCallback((step: 1 | 2 | 3): void => {
-    setCurrentStep(step);
-  }, []);
-
-  const handleSubmit = useCallback(async (): Promise<void> => {
-    if (!validateStep(3)) return;
+  const generateMvp = useCallback(async () => {
+    setIsGenerating(true);
+    setErrors({});
 
     try {
-      Step4Schema.parse(formData);
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const newErrors: FormErrors = {};
-        error.errors.forEach((err) => {
-          const path = err.path[0] as string;
-          newErrors[path] = [err.message];
-        });
-        setErrors(newErrors);
-      }
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const supabase = createSupabaseClient();
-
-      // Prepare client data
-      const clientData = {
-        company_name: formData.company_name,
-        contact_name: '', // Will be updated by user later
-        contact_email: '', // Will be updated by user later
-        sector: formData.sector,
-        problem_description: formData.problem_description,
-        tech_stack: formData.existing_stack || [],
-        budget_range: formData.budget_range,
-        timeline: formData.desired_timeline,
-        status: 'onboarding' as const,
-        onboarding_data: {
-          company_name: formData.company_name,
-          sector: formData.sector,
-          problem_description: formData.problem_description,
-          main_objective: formData.main_objective,
-          existing_stack: formData.existing_stack,
-          tech_constraints: formData.tech_constraints,
-          required_integrations: formData.required_integrations,
-          budget_range: formData.budget_range,
-          desired_timeline: formData.desired_timeline,
-          priority: formData.priority,
-        },
-      };
-
-      let newClientId = clientId;
-
-      // Create or update client
-      if (clientId) {
-        const { error } = await supabase
-          .from('clients')
-          .update(clientData)
-          .eq('id', clientId);
-
-        if (error) throw error;
-      } else {
-        const { data, error } = await supabase
-          .from('clients')
-          .insert([clientData])
-          .select('id')
-          .single();
-
-        if (error) throw error;
-        if (!data?.id) throw new Error('Failed to create client');
-
-        newClientId = data.id;
-      }
-
-      // Call AI generation endpoint
       const response = await fetch('/api/ai/generate-mvp', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          clientId: newClientId,
-          formData,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ formData }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate MVP');
+        throw new Error('Échec de la génération du MVP');
       }
 
-      // Redirect to MVP page
-      router.push(`/${locale}/clients/${newClientId}/mvp`);
+      const result = await response.json();
+      setCanvas(result.canvas);
+      if (result.estimation) {
+        setEstimation(result.estimation);
+      }
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('Error generating MVP:', error);
       setErrors({
-        submit: [error instanceof Error ? error.message : 'An error occurred'],
+        submit: [error instanceof Error ? error.message : 'Une erreur est survenue'],
       });
     } finally {
-      setIsSubmitting(false);
+      setIsGenerating(false);
     }
-  }, [formData, clientId, validateStep, router, locale]);
+  }, [formData]);
 
-  const isStepComplete = (step: number): boolean => {
-    if (step === 1) {
-      return Boolean(
-        formData.company_name && formData.sector && formData.problem_description && formData.main_objective
-      );
-    } else if (step === 2) {
-      return Boolean(formData.existing_stack || formData.required_integrations);
-    } else if (step === 3) {
-      return Boolean(formData.budget_range && formData.desired_timeline && formData.priority);
+  const handleNext = useCallback((): void => {
+    if (currentStep === 1) {
+      if (!validateStep(1)) return;
+      setCurrentStep(2);
+      if (!canvas) {
+        generateMvp();
+      }
+    } else if (currentStep < 5) {
+      setCurrentStep((prev) => (prev + 1) as StepNumber);
     }
-    return false;
-  };
+  }, [currentStep, validateStep, generateMvp, canvas]);
+
+  const handleBack = useCallback((): void => {
+    if (currentStep > 1) {
+      setCurrentStep((prev) => (prev - 1) as StepNumber);
+    }
+  }, [currentStep]);
+
+  const progressPercent = ((currentStep - 1) / (steps.length - 1)) * 100;
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-8">
-      {/* Step Indicator */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          {STEPS.map((step, index) => {
+    <div className="w-full max-w-4xl mx-auto space-y-8">
+      {/* Stepper */}
+      <div className="relative">
+        <div className="absolute top-6 left-[calc(10%)] right-[calc(10%)] h-0.5 bg-border" />
+        <div
+          className="absolute top-6 left-[calc(10%)] h-0.5 bg-primary transition-all duration-500 ease-out"
+          style={{ width: `${progressPercent * 0.8}%` }}
+        />
+
+        <div className="relative flex justify-between">
+          {steps.map((step, index) => {
+            const Icon = STEP_ICONS[index];
             const isActive = step.number === currentStep;
             const isCompleted = step.number < currentStep;
-            const isCurrentOrPrev = step.number <= currentStep;
+            const isClickable = step.number < currentStep;
 
             return (
-              <div key={step.number} className="flex items-center flex-1">
-                {/* Step Circle */}
-                <button
-                  onClick={() => {
-                    if (step.number < currentStep) {
-                      setCurrentStep(step.number as 1 | 2 | 3 | 4);
-                    }
-                  }}
-                  disabled={step.number >= currentStep}
+              <button
+                key={step.number}
+                onClick={() => {
+                  if (isClickable) {
+                    setCurrentStep(step.number as StepNumber);
+                  }
+                }}
+                disabled={!isClickable}
+                className={cn(
+                  'flex flex-col items-center gap-2 group w-1/5',
+                  isClickable && 'cursor-pointer'
+                )}
+              >
+                <div
                   className={cn(
-                    'relative flex h-12 w-12 items-center justify-center rounded-full font-semibold transition-colors',
-                    isActive && 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2',
-                    isCompleted && 'bg-green-500 text-white cursor-pointer',
-                    !isCurrentOrPrev && 'bg-muted text-muted-foreground'
+                    'relative flex h-12 w-12 items-center justify-center rounded-full border-2 transition-all duration-300',
+                    isActive && 'border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-110',
+                    isCompleted && 'border-emerald-500 bg-emerald-500 text-white',
+                    !isActive && !isCompleted && 'border-border bg-card text-muted-foreground'
                   )}
                 >
                   {isCompleted ? (
-                    <span className="text-lg">✓</span>
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
                   ) : (
-                    <span>{step.number}</span>
+                    <Icon className="h-5 w-5" />
                   )}
-                </button>
+                </div>
 
-                {/* Connector Line */}
-                {index < STEPS.length - 1 && (
-                  <div
-                    className={cn(
-                      'flex-1 h-1 mx-2 rounded-full transition-colors',
-                      isCompleted ? 'bg-green-500' : isCurrentOrPrev ? 'bg-primary' : 'bg-muted'
-                    )}
-                  />
-                )}
-              </div>
+                <p
+                  className={cn(
+                    'text-xs font-semibold transition-colors text-center',
+                    isActive && 'text-foreground',
+                    isCompleted && 'text-emerald-600 dark:text-emerald-400',
+                    !isActive && !isCompleted && 'text-muted-foreground'
+                  )}
+                >
+                  {step.label}
+                </p>
+              </button>
             );
           })}
         </div>
+      </div>
 
-        {/* Step Labels */}
-        <div className="flex justify-between text-xs font-medium">
-          {STEPS.map((step) => (
-            <span key={step.number} className="text-center flex-1">
-              {step.label}
-            </span>
-          ))}
-        </div>
+      {/* Step title */}
+      <div className="text-center space-y-1">
+        <h2 className="text-xl font-bold tracking-tight">
+          {dict[`step_${currentStep}`]}
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          {dict[`step_${currentStep}_desc`]}
+        </p>
       </div>
 
       {/* Form Content */}
-      <Card className="p-6">
+      <div className="animate-fadeIn">
         {currentStep === 1 && (
           <ProblemCapture
             data={formData}
@@ -298,6 +237,18 @@ export function OnboardingForm({
         )}
 
         {currentStep === 2 && (
+          <MvpStep
+            clientId={null}
+            mvpId={null}
+            canvas={canvas}
+            estimation={estimation}
+            isGenerating={isGenerating}
+            onCanvasUpdate={handleCanvasUpdate}
+            dictionary={dictionary}
+          />
+        )}
+
+        {currentStep === 3 && (
           <TechConstraints
             data={formData}
             onChange={handleStepChange}
@@ -306,50 +257,57 @@ export function OnboardingForm({
           />
         )}
 
-        {currentStep === 3 && (
-          <BudgetTimeline
+        {currentStep === 4 && (
+          <ProjectScoping
             data={formData}
             onChange={handleStepChange}
             dictionary={dictionary}
-            errors={errors}
           />
         )}
 
-        {currentStep === 4 && (
-          <ReviewSubmit
-            formData={formData}
-            onSubmit={handleSubmit}
-            onEdit={handleEdit}
-            isSubmitting={isSubmitting}
-            dictionary={dictionary}
-          />
+        {currentStep === 5 && (
+          <PaymentStep dictionary={dictionary} />
         )}
-      </Card>
+      </div>
 
       {/* Navigation Buttons */}
-      {currentStep < 4 && (
-        <div className="flex gap-4">
+      {!isGenerating && (
+        <div className="flex gap-4 pt-2">
           <Button
             onClick={handleBack}
             variant="outline"
-            className="flex-1"
+            className="flex-1 h-12 gap-2 text-base"
             disabled={currentStep === 1}
           >
+            <ChevronLeft className="h-4 w-4" />
             {commonDict.button_back}
           </Button>
-          <Button
-            onClick={handleNext}
-            className="flex-1"
-          >
-            {commonDict.button_next}
-          </Button>
+          {currentStep < 5 && (
+            <Button
+              onClick={handleNext}
+              className="flex-1 h-12 gap-2 text-base"
+              disabled={currentStep === 2 && !canvas}
+            >
+              {currentStep === 1 ? (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  {dict.generate_mvp}
+                </>
+              ) : (
+                <>
+                  {commonDict.button_next}
+                  <ChevronRight className="h-4 w-4" />
+                </>
+              )}
+            </Button>
+          )}
         </div>
       )}
 
       {/* Submit Error */}
       {errors.submit && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-800">{errors.submit[0]}</p>
+        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+          <p className="text-sm text-destructive">{errors.submit[0]}</p>
         </div>
       )}
     </div>

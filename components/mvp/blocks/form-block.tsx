@@ -14,7 +14,7 @@ export function FormBlock({ block }: FormBlockProps) {
 
   return (
     <div className="h-full flex flex-col p-8 bg-white">
-      <h2 className="text-2xl font-bold mb-2">{content.title || 'Contact Us'}</h2>
+      <h2 className="text-2xl font-bold mb-2">{content.title || 'Nous contacter'}</h2>
       <p className="text-slate-600 mb-6">{content.description || ''}</p>
       <form className="space-y-4 flex-1 flex flex-col justify-between">
         <div className="space-y-4">
@@ -42,7 +42,7 @@ export function FormBlock({ block }: FormBlockProps) {
           ))}
         </div>
         <Button className="w-full" disabled>
-          {content.submitButtonText || 'Submit'}
+          {content.submitButtonText || 'Envoyer'}
         </Button>
       </form>
     </div>

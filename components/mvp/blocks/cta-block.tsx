@@ -14,10 +14,10 @@ export function CtaBlock({ block }: CtaBlockProps) {
     <div className="h-full flex items-center justify-center p-8 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
       <div className="text-center max-w-xl">
         <p className="text-2xl font-semibold mb-6">
-          {content.description || 'Ready to get started?'}
+          {content.description || 'Prêt à commencer ?'}
         </p>
         <Button size="lg" className="bg-white text-blue-600 hover:bg-slate-100">
-          {content.ctaText || 'Get Started'}
+          {content.ctaText || 'Commencer'}
         </Button>
       </div>
     </div>

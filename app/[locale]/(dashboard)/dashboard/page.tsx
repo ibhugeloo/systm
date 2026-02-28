@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { createClient } from '@/lib/supabase/server';
 import { getDictionary } from '@/lib/get-dictionaries';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Zap, Send, CheckCircle } from 'lucide-react';
+import { Users, Zap, Send, ClipboardList } from 'lucide-react';
 import KanbanBoard from '@/components/dashboard/kanban-board';
 
 interface DashboardPageProps {
@@ -13,7 +13,7 @@ interface DashboardPageProps {
 export default async function DashboardPage({ params }: DashboardPageProps) {
   const { locale } = await params;
   const supabase = await createClient();
-  const dict = await getDictionary(locale as 'fr' | 'en');
+  const dict = await getDictionary();
 
   // Fetch all clients
   const { data: clients } = await supabase
@@ -35,56 +35,69 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
   ).length;
   const handoffCount = allClients.filter((c) => c.status === 'handoff_sent').length;
 
+  const stats = [
+    {
+      label: dict.dashboard.active_clients,
+      value: activeClients,
+      sub: `sur ${totalClients} au total`,
+      icon: Users,
+      color: 'text-blue-500',
+      bg: 'bg-blue-500/10',
+    },
+    {
+      label: dict.dashboard.mvp_generated,
+      value: mvpCount,
+      icon: Zap,
+      color: 'text-amber-500',
+      bg: 'bg-amber-500/10',
+    },
+    {
+      label: dict.dashboard.handoff_sent,
+      value: handoffCount,
+      icon: Send,
+      color: 'text-emerald-500',
+      bg: 'bg-emerald-500/10',
+    },
+    {
+      label: dict.dashboard.pending_requests,
+      value: pendingRequests || 0,
+      icon: ClipboardList,
+      color: 'text-purple-500',
+      bg: 'bg-purple-500/10',
+    },
+  ];
+
   return (
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">{dict.dashboard.title}</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{dict.dashboard.title}</h1>
         <p className="text-muted-foreground mt-1">{dict.dashboard.pipeline}</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">{dict.dashboard.active_clients}</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{activeClients}</div>
-            <p className="text-xs text-muted-foreground">sur {totalClients} total</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">MVPs Générés</CardTitle>
-            <Zap className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{mvpCount}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">{dict.dashboard.handoff_sent}</CardTitle>
-            <Send className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{handoffCount}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">{dict.dashboard.pending_requests}</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{pendingRequests || 0}</div>
-          </CardContent>
-        </Card>
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <Card key={stat.label}>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {stat.label}
+                </CardTitle>
+                <div className={`${stat.bg} ${stat.color} p-2 rounded-lg`}>
+                  <Icon className="h-4 w-4" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold tracking-tight">{stat.value}</div>
+                {stat.sub && (
+                  <p className="text-xs text-muted-foreground mt-1">{stat.sub}</p>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {/* Pipeline Kanban */}
