@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     // Fetch latest MVP
     const { data: mvp } = await supabase
       .from('mvps')
-      .select('canvas_data')
+      .select('id, canvas_data')
       .eq('client_id', clientId)
       .order('created_at', { ascending: false })
       .limit(1)
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       .from('handoffs')
       .insert({
         client_id: clientId,
-        mvp_id: mvp?.canvas_data ? clientId : clientId, // Best effort
+        mvp_id: mvp?.id || null,
         markdown_content: markdownContent,
         sent_to: [],
         status: 'draft' as const,

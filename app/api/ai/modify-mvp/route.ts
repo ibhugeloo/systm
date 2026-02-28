@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { streamClaude } from '@/lib/ai/claude';
+import { callClaude } from '@/lib/ai/claude';
 import { getMvpModificationPrompt } from '@/lib/ai/prompts/mvp-modification';
 import { MvpCanvas } from '@/types/mvp';
+import { normalizeCanvas } from '@/lib/ai/normalize-canvas';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,30 +25,21 @@ export async function POST(request: NextRequest) {
       modification
     );
 
-    // Stream the response
-    const stream = await streamClaude(
+    // Call Claude (non-streaming since we need the full response)
+    const fullResponse = await callClaude(
       prompt,
       `Apply this modification: ${modification}`
     );
 
-    // Collect the full response and return the modified canvas
-    const reader = stream.getReader();
-    let fullResponse = '';
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      fullResponse += value;
-    }
-
-    // Parse the modified canvas
-    let modifiedCanvas: Record<string, unknown>;
+    // Parse and normalize the modified canvas
+    let modifiedCanvas: MvpCanvas;
     try {
       const jsonMatch = fullResponse.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         throw new Error('No JSON found in response');
       }
-      modifiedCanvas = JSON.parse(jsonMatch[0]);
+      const rawCanvas = JSON.parse(jsonMatch[0]);
+      modifiedCanvas = normalizeCanvas(rawCanvas);
     } catch {
       return NextResponse.json(
         { error: 'Failed to parse AI modification' },
