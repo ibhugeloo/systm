@@ -26,14 +26,14 @@ interface ProblemCaptureProps {
 }
 
 const SECTOR_OPTIONS = [
-  { value: 'tech', label: 'Technology' },
+  { value: 'tech', label: 'Technologie' },
   { value: 'finance', label: 'Finance' },
-  { value: 'healthcare', label: 'Healthcare' },
-  { value: 'education', label: 'Education' },
-  { value: 'retail', label: 'Retail' },
-  { value: 'logistics', label: 'Logistics' },
-  { value: 'media', label: 'Media' },
-  { value: 'other', label: 'Other' },
+  { value: 'healthcare', label: 'Santé' },
+  { value: 'education', label: 'Éducation' },
+  { value: 'retail', label: 'Commerce' },
+  { value: 'logistics', label: 'Logistique' },
+  { value: 'media', label: 'Médias' },
+  { value: 'other', label: 'Autre' },
 ];
 
 export function ProblemCapture({

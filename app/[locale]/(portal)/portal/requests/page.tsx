@@ -36,7 +36,6 @@ const TYPE_LABELS: Record<string, string> = {
 
 export default function PortalRequestsPage() {
   const params = useParams();
-  const locale = (params.locale as string) || 'fr';
   const { user } = useAuth();
 
   const [clientId, setClientId] = useState<string | null>(null);
@@ -238,7 +237,7 @@ export default function PortalRequestsPage() {
                   </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  {new Date(req.created_at).toLocaleDateString(locale, {
+                  {new Date(req.created_at).toLocaleDateString('fr', {
                     day: 'numeric',
                     month: 'long',
                     year: 'numeric',

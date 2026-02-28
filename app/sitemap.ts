@@ -1,23 +1,20 @@
 import { MetadataRoute } from 'next';
-import { i18n } from '@/lib/i18n-config';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.systm.re';
 
-  const routes = i18n.locales.flatMap((locale) => [
+  return [
     {
-      url: `${baseUrl}/${locale}`,
+      url: `${baseUrl}/fr`,
       lastModified: new Date(),
       changeFrequency: 'weekly' as const,
       priority: 1,
     },
     {
-      url: `${baseUrl}/${locale}/login`,
+      url: `${baseUrl}/fr/login`,
       lastModified: new Date(),
       changeFrequency: 'monthly' as const,
       priority: 0.5,
     },
-  ]);
-
-  return routes;
+  ];
 }

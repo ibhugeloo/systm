@@ -91,7 +91,7 @@ export default function DemoPage() {
       <div className="flex flex-col items-center justify-center h-screen gap-4">
         <h1 className="text-2xl font-bold">Aucun MVP trouvé</h1>
         <p className="text-gray-600 dark:text-gray-400">Ce client n&apos;a pas encore de MVP.</p>
-        <Link href={`/${locale}/dashboard/clients/${clientId}`}>
+        <Link href={`/fr/dashboard/clients/${clientId}`}>
           <Button variant="outline">Retour au client</Button>
         </Link>
       </div>
@@ -110,7 +110,7 @@ export default function DemoPage() {
 
       {/* Bottom Control Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between z-40">
-        <Link href={`/${locale}/dashboard/clients/${clientId}`}>
+        <Link href={`/fr/dashboard/clients/${clientId}`}>
           <Button variant="outline" size="sm">
             <ChevronLeft className="h-4 w-4 mr-2" />
             Fin de démo

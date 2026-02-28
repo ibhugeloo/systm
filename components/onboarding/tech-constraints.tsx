@@ -99,7 +99,7 @@ export function TechConstraints({
         <div className="space-y-3">
           <label className="block text-sm font-medium">
             {dict.existing_stack_label}
-            <span className="text-gray-400 ml-1 font-normal">(optional)</span>
+            <span className="text-gray-400 ml-1 font-normal">(optionnel)</span>
           </label>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {TECH_STACK_OPTIONS.map((tech) => (
@@ -126,7 +126,7 @@ export function TechConstraints({
         <div className="space-y-2">
           <label htmlFor="tech_constraints" className="block text-sm font-medium">
             {dict.tech_constraints_label}
-            <span className="text-gray-400 ml-1 font-normal">(optional)</span>
+            <span className="text-gray-400 ml-1 font-normal">(optionnel)</span>
           </label>
           <Textarea
             id="tech_constraints"
@@ -144,7 +144,7 @@ export function TechConstraints({
         <div className="space-y-3">
           <label className="block text-sm font-medium">
             {dict.required_integrations_label}
-            <span className="text-gray-400 ml-1 font-normal">(optional)</span>
+            <span className="text-gray-400 ml-1 font-normal">(optionnel)</span>
           </label>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {INTEGRATION_OPTIONS.map((integration) => (

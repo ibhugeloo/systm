@@ -24,25 +24,25 @@ interface BudgetTimelineProps {
 }
 
 const BUDGET_OPTIONS = [
-  { value: '<5k', label: 'Less than $5,000' },
-  { value: '5k-15k', label: '$5,000 - $15,000' },
-  { value: '15k-50k', label: '$15,000 - $50,000' },
-  { value: '50k-100k', label: '$50,000 - $100,000' },
-  { value: '>100k', label: 'More than $100,000' },
+  { value: '<5k', label: 'Moins de 5 000 €' },
+  { value: '5k-15k', label: '5 000 € - 15 000 €' },
+  { value: '15k-50k', label: '15 000 € - 50 000 €' },
+  { value: '50k-100k', label: '50 000 € - 100 000 €' },
+  { value: '>100k', label: 'Plus de 100 000 €' },
 ];
 
 const TIMELINE_OPTIONS = [
-  { value: '<1month', label: 'Less than 1 month' },
-  { value: '1-3months', label: '1-3 months' },
-  { value: '3-6months', label: '3-6 months' },
-  { value: '>6months', label: 'More than 6 months' },
+  { value: '<1month', label: 'Moins d\'1 mois' },
+  { value: '1-3months', label: '1-3 mois' },
+  { value: '3-6months', label: '3-6 mois' },
+  { value: '>6months', label: 'Plus de 6 mois' },
 ];
 
 const PRIORITY_OPTIONS = [
-  { value: 'low', label: 'Low' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'high', label: 'High' },
-  { value: 'critical', label: 'Critical' },
+  { value: 'low', label: 'Basse' },
+  { value: 'medium', label: 'Moyenne' },
+  { value: 'high', label: 'Haute' },
+  { value: 'critical', label: 'Critique' },
 ];
 
 export function BudgetTimeline({
@@ -152,7 +152,7 @@ export function BudgetTimeline({
               id="priority"
               className={cn(getFieldError('priority') && 'border-red-500 focus-visible:ring-red-500')}
             >
-              <SelectValue placeholder="Select priority" />
+              <SelectValue placeholder="Sélectionnez la priorité" />
             </SelectTrigger>
             <SelectContent>
               {PRIORITY_OPTIONS.map((option) => (

@@ -26,7 +26,7 @@ interface ClientPageProps {
 export default async function ClientPage({ params }: ClientPageProps) {
   const { locale, clientId } = await params;
   const supabase = await createClient();
-  const dict = await getDictionary(locale as 'fr' | 'en');
+  const dict = await getDictionary();
 
   // Fetch client
   const { data: client, error } = await supabase
@@ -65,7 +65,7 @@ export default async function ClientPage({ params }: ClientPageProps) {
     .limit(1)
     .single();
 
-  const basePath = `/${locale}/dashboard/clients/${clientId}`;
+  const basePath = `/fr/dashboard/clients/${clientId}`;
 
   return (
     <div className="space-y-6">

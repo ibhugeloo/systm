@@ -34,10 +34,10 @@ interface OnboardingFormProps {
 type FormErrors = Record<string, string[]>;
 
 const STEPS = [
-  { number: 1, label: 'Company Details' },
-  { number: 2, label: 'Tech Stack' },
-  { number: 3, label: 'Budget & Timeline' },
-  { number: 4, label: 'Review & Submit' },
+  { number: 1, label: 'Entreprise' },
+  { number: 2, label: 'Stack technique' },
+  { number: 3, label: 'Budget & Délai' },
+  { number: 4, label: 'Récapitulatif' },
 ];
 
 export function OnboardingForm({
@@ -204,11 +204,11 @@ export function OnboardingForm({
       }
 
       // Redirect to MVP page
-      router.push(`/${locale}/clients/${newClientId}/mvp`);
+      router.push(`/fr/clients/${newClientId}/mvp`);
     } catch (error) {
       console.error('Error submitting form:', error);
       setErrors({
-        submit: [error instanceof Error ? error.message : 'An error occurred'],
+        submit: [error instanceof Error ? error.message : 'Une erreur est survenue'],
       });
     } finally {
       setIsSubmitting(false);

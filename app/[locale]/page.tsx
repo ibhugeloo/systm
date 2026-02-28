@@ -1,24 +1,22 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/providers/auth-provider';
 
 export default function HomePage() {
   const router = useRouter();
-  const params = useParams();
-  const locale = (params.locale as string) || 'fr';
   const { user, isLoading } = useAuth();
 
   useEffect(() => {
     if (!isLoading) {
       if (!user) {
-        router.push(`/${locale}/login`);
+        router.push('/fr/login');
       } else {
-        router.push(`/${locale}/dashboard`);
+        router.push('/fr/dashboard');
       }
     }
-  }, [user, isLoading, router, locale]);
+  }, [user, isLoading, router]);
 
   if (isLoading) {
     return (

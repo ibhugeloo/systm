@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -10,8 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function LoginPage() {
-  const params = useParams();
-  const locale = (params.locale as string) || 'fr';
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -35,7 +32,7 @@ export default function LoginPage() {
       if (!res.ok) {
         toast.error('Identifiants invalides');
       } else {
-        window.location.href = `/${locale}/dashboard`;
+        window.location.href = '/fr/dashboard';
       }
     } catch {
       toast.error('Une erreur est survenue');
@@ -53,24 +50,20 @@ export default function LoginPage() {
           <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
             systm.re
           </div>
-          <CardTitle>
-            {locale === 'fr' ? 'Bienvenue' : 'Welcome back'}
-          </CardTitle>
-          <CardDescription>
-            {locale === 'fr' ? 'Connectez-vous à votre compte' : 'Sign in to your account'}
-          </CardDescription>
+          <CardTitle>Bienvenue</CardTitle>
+          <CardDescription>Connectez-vous à votre compte</CardDescription>
         </CardHeader>
 
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="username" className="text-sm font-medium">
-                {locale === 'fr' ? 'Identifiant' : 'Username'}
+                Identifiant
               </label>
               <Input
                 id="username"
                 type="text"
-                placeholder={locale === 'fr' ? 'Votre identifiant' : 'Your username'}
+                placeholder="Votre identifiant"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={loading}
@@ -81,7 +74,7 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
-                {locale === 'fr' ? 'Mot de passe' : 'Password'}
+                Mot de passe
               </label>
               <Input
                 id="password"
@@ -96,7 +89,7 @@ export default function LoginPage() {
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="animate-spin mr-2 h-4 w-4" />}
-              {locale === 'fr' ? 'Se connecter' : 'Sign in'}
+              Se connecter
             </Button>
           </form>
         </CardContent>

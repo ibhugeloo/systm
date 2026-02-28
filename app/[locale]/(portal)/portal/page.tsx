@@ -34,7 +34,6 @@ const STATUS_LABELS: Record<string, string> = {
 
 export default function PortalPage() {
   const params = useParams();
-  const locale = (params.locale as string) || 'fr';
   const { user, isLoading: authLoading } = useAuth();
 
   const [client, setClient] = useState<any>(null);
@@ -124,7 +123,7 @@ export default function PortalPage() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link href={`/${locale}/portal/requests`}>
+        <Link href={`/fr/portal/requests`}>
           <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
             <CardContent className="flex flex-col items-center justify-center py-6 gap-2">
               <FileText className="h-8 w-8 text-primary" />
@@ -136,7 +135,7 @@ export default function PortalPage() {
           </Card>
         </Link>
 
-        <Link href={`/${locale}/portal/booking`}>
+        <Link href={`/fr/portal/booking`}>
           <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
             <CardContent className="flex flex-col items-center justify-center py-6 gap-2">
               <Calendar className="h-8 w-8 text-primary" />

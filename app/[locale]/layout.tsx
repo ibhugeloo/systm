@@ -4,7 +4,7 @@ import { Toaster } from 'sonner';
 import { ThemeProviderWrapper } from '@/providers/theme-provider';
 import { AuthProvider } from '@/providers/auth-provider';
 import { PostHogProviderWrapper } from '@/providers/posthog-provider';
-import { i18n, type Locale } from '@/lib/i18n-config';
+import { type Locale } from '@/lib/i18n-config';
 import '@/app/globals.css';
 
 const inter = Inter({
@@ -20,7 +20,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata = {
   title: 'systm.re Platform',
   description:
-    'The systm.re platform for managing clients, MVPs, and team collaboration.',
+    'Plateforme systm.re de gestion des clients, MVPs et collaboration.',
 };
 
 interface RootLayoutProps {
@@ -29,9 +29,7 @@ interface RootLayoutProps {
 }
 
 export async function generateStaticParams() {
-  return i18n.locales.map((locale) => ({
-    locale,
-  }));
+  return [{ locale: 'fr' }];
 }
 
 export default async function RootLayout({

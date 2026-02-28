@@ -19,7 +19,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    label: 'Dashboard',
+    label: 'Tableau de bord',
     href: '/dashboard',
     icon: LayoutDashboard,
   },
@@ -29,13 +29,13 @@ const navItems: NavItem[] = [
     icon: Users,
   },
   {
-    label: 'Team',
+    label: 'Équipe',
     href: '/team',
     icon: UserCog,
     adminOnly: true,
   },
   {
-    label: 'Settings',
+    label: 'Paramètres',
     href: '/settings',
     icon: Settings,
   },
@@ -141,7 +141,7 @@ export function DashboardSidebar() {
               onClick={handleSignOut}
             >
               <LogOut className="h-4 w-4" />
-              Sign out
+              Déconnexion
             </Button>
           </div>
         </div>

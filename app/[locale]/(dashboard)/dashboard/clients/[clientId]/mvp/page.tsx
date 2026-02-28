@@ -27,7 +27,7 @@ export default async function MvpPage({ params }: MvpPageProps) {
     notFound();
   }
 
-  const dict = await getDictionary(locale as "fr" | "en");
+  const dict = await getDictionary();
 
   // Fetch MVP for this client
   const { data: mvp } = await supabase
@@ -47,7 +47,7 @@ export default async function MvpPage({ params }: MvpPageProps) {
           <p className="text-lg text-gray-600 max-w-md text-center">
             {dict.mvp.subtitle} - {client.company_name}
           </p>
-          <Link href={`/${locale}/dashboard/clients/${clientId}/onboarding`}>
+          <Link href={`/fr/dashboard/clients/${clientId}/onboarding`}>
             <Button size="lg">{dict.onboarding.form_submitted}</Button>
           </Link>
         </div>

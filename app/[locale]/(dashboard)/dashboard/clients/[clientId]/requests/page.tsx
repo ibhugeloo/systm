@@ -90,7 +90,7 @@ export default async function RequestsPage({ params }: RequestsPageProps) {
                   </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  {new Date(req.created_at).toLocaleDateString(locale, {
+                  {new Date(req.created_at).toLocaleDateString('fr', {
                     day: 'numeric',
                     month: 'long',
                     year: 'numeric',

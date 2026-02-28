@@ -33,11 +33,11 @@ export function ReviewSubmit({
   const formatBudgetRange = (range: string | undefined): string => {
     if (!range) return 'N/A';
     const budgetMap: Record<string, string> = {
-      '<5k': 'Less than $5,000',
-      '5k-15k': '$5,000 - $15,000',
-      '15k-50k': '$15,000 - $50,000',
-      '50k-100k': '$50,000 - $100,000',
-      '>100k': 'More than $100,000',
+      '<5k': 'Moins de 5 000 €',
+      '5k-15k': '5 000 € - 15 000 €',
+      '15k-50k': '15 000 € - 50 000 €',
+      '50k-100k': '50 000 € - 100 000 €',
+      '>100k': 'Plus de 100 000 €',
     };
     return budgetMap[range] || range;
   };
@@ -45,10 +45,10 @@ export function ReviewSubmit({
   const formatTimeline = (timeline: string | undefined): string => {
     if (!timeline) return 'N/A';
     const timelineMap: Record<string, string> = {
-      '<1month': 'Less than 1 month',
-      '1-3months': '1-3 months',
-      '3-6months': '3-6 months',
-      '>6months': 'More than 6 months',
+      '<1month': 'Moins d\'1 mois',
+      '1-3months': '1-3 mois',
+      '3-6months': '3-6 mois',
+      '>6months': 'Plus de 6 mois',
     };
     return timelineMap[timeline] || timeline;
   };
@@ -56,10 +56,10 @@ export function ReviewSubmit({
   const formatPriority = (priority: string | undefined): string => {
     if (!priority) return 'N/A';
     const priorityMap: Record<string, string> = {
-      low: 'Low',
-      medium: 'Medium',
-      high: 'High',
-      critical: 'Critical',
+      low: 'Basse',
+      medium: 'Moyenne',
+      high: 'Haute',
+      critical: 'Critique',
     };
     return priorityMap[priority] || priority;
   };
@@ -72,7 +72,7 @@ export function ReviewSubmit({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg">{dict.step_1}</CardTitle>
-              <CardDescription>Your company information</CardDescription>
+              <CardDescription>Informations de votre entreprise</CardDescription>
             </div>
             <Button
               variant="ghost"
@@ -114,7 +114,7 @@ export function ReviewSubmit({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg">{dict.step_2}</CardTitle>
-              <CardDescription>Your technical requirements</CardDescription>
+              <CardDescription>Vos exigences techniques</CardDescription>
             </div>
             <Button
               variant="ghost"
@@ -143,7 +143,7 @@ export function ReviewSubmit({
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground italic">None selected</p>
+              <p className="text-sm text-muted-foreground italic">Aucune sélection</p>
             )}
           </div>
           {formData.tech_constraints && (
@@ -166,7 +166,7 @@ export function ReviewSubmit({
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground italic">None selected</p>
+              <p className="text-sm text-muted-foreground italic">Aucune sélection</p>
             )}
           </div>
         </CardContent>
@@ -178,7 +178,7 @@ export function ReviewSubmit({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg">{dict.step_3}</CardTitle>
-              <CardDescription>Budget and timeline details</CardDescription>
+              <CardDescription>Détails du budget et du délai</CardDescription>
             </div>
             <Button
               variant="ghost"

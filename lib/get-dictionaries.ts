@@ -1,5 +1,3 @@
-import { Locale } from './i18n-config';
-
 interface Dictionary {
   common: Record<string, string>;
   auth: Record<string, string>;
@@ -10,12 +8,12 @@ interface Dictionary {
   portal: Record<string, string>;
 }
 
-export async function getDictionary(locale: Locale): Promise<Dictionary> {
+export async function getDictionary(): Promise<Dictionary> {
   try {
-    const dictionary = await import(`@/dictionaries/${locale}.json`);
+    const dictionary = await import(`@/dictionaries/fr.json`);
     return dictionary.default as Dictionary;
   } catch (error) {
-    console.error(`Failed to load dictionary for locale: ${locale}`, error);
-    throw new Error(`Dictionary not found for locale: ${locale}`);
+    console.error('Failed to load dictionary', error);
+    throw new Error('Dictionary not found');
   }
 }

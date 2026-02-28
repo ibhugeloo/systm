@@ -36,7 +36,7 @@ const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'outline' | 'dest
 export default async function ClientsPage({ params }: ClientsPageProps) {
   const { locale } = await params;
   const supabase = await createClient();
-  const dict = await getDictionary(locale as 'fr' | 'en');
+  const dict = await getDictionary();
 
   // Fetch all clients with assigned team member
   const { data: clients } = await supabase
@@ -54,7 +54,7 @@ export default async function ClientsPage({ params }: ClientsPageProps) {
             {clients?.length || 0} client{(clients?.length || 0) > 1 ? 's' : ''}
           </p>
         </div>
-        <Link href={`/${locale}/dashboard/clients/new/onboarding`}>
+        <Link href={`/fr/dashboard/clients/new/onboarding`}>
           <Button>
             <Plus className="h-4 w-4 mr-2" />
             Nouveau client
@@ -68,7 +68,7 @@ export default async function ClientsPage({ params }: ClientsPageProps) {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12 text-center">
               <p className="text-muted-foreground mb-4">Aucun client pour le moment</p>
-              <Link href={`/${locale}/dashboard/clients/new/onboarding`}>
+              <Link href={`/fr/dashboard/clients/new/onboarding`}>
                 <Button>
                   <Plus className="h-4 w-4 mr-2" />
                   Ajouter un client
@@ -83,7 +83,7 @@ export default async function ClientsPage({ params }: ClientsPageProps) {
               return (
                 <Link
                   key={client.id}
-                  href={`/${locale}/dashboard/clients/${client.id}`}
+                  href={`/fr/dashboard/clients/${client.id}`}
                 >
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
                     <CardContent className="flex items-center justify-between p-4">
@@ -101,7 +101,7 @@ export default async function ClientsPage({ params }: ClientsPageProps) {
                         </div>
                       </div>
                       <div className="text-sm text-muted-foreground ml-4">
-                        {new Date(client.created_at).toLocaleDateString(locale)}
+                        {new Date(client.created_at).toLocaleDateString('fr')}
                       </div>
                     </CardContent>
                   </Card>

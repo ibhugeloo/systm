@@ -11,7 +11,7 @@ interface SettingsPageProps {
 
 export default async function SettingsPage({ params }: SettingsPageProps) {
   const { locale } = await params;
-  const dict = await getDictionary(locale as 'fr' | 'en');
+  const dict = await getDictionary();
 
   return (
     <div className="space-y-6 max-w-2xl">

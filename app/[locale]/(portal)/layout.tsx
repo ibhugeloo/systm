@@ -1,5 +1,4 @@
 import { PortalHeader } from '@/components/layout/portal-header';
-import { LanguageSwitcher } from '@/components/layout/language-switcher';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
@@ -13,9 +12,8 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         </div>
       </main>
 
-      {/* Theme and language switchers in a floating position */}
+      {/* Theme switcher in a floating position */}
       <div className="fixed bottom-6 right-6 flex gap-2">
-        <LanguageSwitcher />
         <ThemeToggle />
       </div>
     </div>

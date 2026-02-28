@@ -18,7 +18,7 @@ export default async function OnboardingPage({
   params,
 }: OnboardingPageProps): Promise<React.ReactElement> {
   const { locale, clientId } = await params;
-  const dictionary = await getDictionary(locale);
+  const dictionary = await getDictionary();
   const supabase = await createSupabaseServer();
 
   // Fetch existing client data if available
@@ -49,11 +49,11 @@ export default async function OnboardingPage({
       <div className="container max-w-4xl mx-auto">
         {/* Breadcrumb Navigation */}
         <nav className="flex items-center gap-2 text-sm mb-8 text-muted-foreground">
-          <a href={`/${locale}/dashboard`} className="hover:text-foreground transition-colors">
+          <a href={`/fr/dashboard`} className="hover:text-foreground transition-colors">
             {dictionary.dashboard.title}
           </a>
           <span>/</span>
-          <a href={`/${locale}/clients`} className="hover:text-foreground transition-colors">
+          <a href={`/fr/clients`} className="hover:text-foreground transition-colors">
             {dictionary.dashboard.clients}
           </a>
           <span>/</span>

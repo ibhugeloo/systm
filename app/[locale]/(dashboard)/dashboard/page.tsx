@@ -13,7 +13,7 @@ interface DashboardPageProps {
 export default async function DashboardPage({ params }: DashboardPageProps) {
   const { locale } = await params;
   const supabase = await createClient();
-  const dict = await getDictionary(locale as 'fr' | 'en');
+  const dict = await getDictionary();
 
   // Fetch all clients
   const { data: clients } = await supabase
@@ -88,7 +88,7 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
       </div>
 
       {/* Pipeline Kanban */}
-      <KanbanBoard clients={allClients} locale={locale} />
+      <KanbanBoard clients={allClients} locale="fr" />
     </div>
   );
 }
