@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   full_name text NOT NULL DEFAULT '',
   role text NOT NULL DEFAULT 'client' CHECK (role IN ('admin', 'team_member', 'client')),
   avatar_url text,
+  password_hash text,
+  settings jsonb,
   created_at timestamp with time zone DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
@@ -111,7 +113,20 @@ CREATE INDEX IF NOT EXISTS idx_client_requests_client_id ON public.client_reques
 CREATE INDEX IF NOT EXISTS idx_client_requests_status ON public.client_requests(status);
 
 -- ========================================
--- 7. RLS — Open access (auth handled at app level)
+-- 7. LOGIN LOGS
+-- ========================================
+CREATE TABLE IF NOT EXISTS public.login_logs (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  ip_address text NOT NULL DEFAULT 'unknown',
+  user_agent text NOT NULL DEFAULT 'unknown',
+  logged_in_at timestamp with time zone DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_login_logs_user_id ON public.login_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_login_logs_logged_in_at ON public.login_logs(logged_in_at);
+
+-- ========================================
+-- 8. RLS — Open access (auth handled at app level)
 -- ========================================
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
@@ -119,10 +134,11 @@ ALTER TABLE public.mvps ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.conversations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.handoffs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.client_requests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.login_logs ENABLE ROW LEVEL SECURITY;
 
 -- Grant to both anon and authenticated
 DO $$ DECLARE t text; BEGIN
-  FOR t IN SELECT unnest(ARRAY['profiles','clients','mvps','conversations','handoffs','client_requests']) LOOP
+  FOR t IN SELECT unnest(ARRAY['profiles','clients','mvps','conversations','handoffs','client_requests','login_logs']) LOOP
     EXECUTE format('GRANT SELECT, INSERT, UPDATE, DELETE ON public.%I TO anon', t);
     EXECUTE format('GRANT SELECT, INSERT, UPDATE, DELETE ON public.%I TO authenticated', t);
   END LOOP;
@@ -135,3 +151,4 @@ CREATE POLICY IF NOT EXISTS "Allow full access" ON public.mvps FOR ALL USING (tr
 CREATE POLICY IF NOT EXISTS "Allow full access" ON public.conversations FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY IF NOT EXISTS "Allow full access" ON public.handoffs FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY IF NOT EXISTS "Allow full access" ON public.client_requests FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY IF NOT EXISTS "Allow full access" ON public.login_logs FOR ALL USING (true) WITH CHECK (true);

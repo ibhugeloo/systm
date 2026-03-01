@@ -11,8 +11,9 @@ Permet de gérer les clients, générer des MVP avec l'IA, organiser des démos,
 - **IA** : Anthropic Claude API (`@anthropic-ai/sdk`)
 - **Email** : Resend + React Email
 - **Analytics** : PostHog
-- **i18n** : FR/EN avec fichiers JSON dans `dictionaries/`
-- **Auth** : Cookie simple (`systm-auth`) — credentials hardcodés dans `lib/auth.ts`
+- **i18n** : FR uniquement (fichier JSON dans `dictionaries/fr.json`)
+- **Auth** : Cookie simple (`systm-auth`) — authentification par email, pas d'inscription
+- **Déploiement** : Coolify (variables d'environnement gérées dans Coolify)
 
 ## Commandes
 
@@ -135,7 +136,7 @@ Copier `.env.local.example` vers `.env.local` et remplir :
 ## Conventions
 
 - **Langue du code** : anglais (noms de variables, composants, fichiers)
-- **Langue de l'UI** : français par défaut, anglais disponible via `dictionaries/`
+- **Langue de l'UI** : français uniquement
 - **Composants UI** : utiliser les composants shadcn/ui dans `components/ui/`
 - **Formulaires** : validation avec Zod (`lib/validation/`)
 - **Notifications** : utiliser `toast` de `sonner`
@@ -171,10 +172,7 @@ Copier `.env.local.example` vers `.env.local` et remplir :
    - Tester l'envoi de handoff par email
    - Personnaliser les templates dans `lib/email/templates/`
 
-5. **Activer Stripe pour la facturation**
-   - Configurer les clés Stripe
-   - Implémenter le webhook (`app/api/webhooks/stripe/route.ts`)
-   - Lier les paiements aux clients
+5. **Stripe** : intentionnellement en mode placeholder/fake pour l'instant — ne pas toucher
 
 6. **Améliorer le portail client**
    - Le portail (`/portal`) est fonctionnel mais basique
@@ -191,10 +189,9 @@ Copier `.env.local.example` vers `.env.local` et remplir :
    - Tests unitaires sur les schémas Zod et les utilitaires
    - Tests E2E sur le flux d'onboarding (Playwright)
 
-9. **Déployer sur Vercel**
-   - L'app est prête pour le déploiement
-   - Configurer les variables d'environnement sur Vercel
-   - Connecter le domaine `systm.re`
+9. **Déploiement sur Coolify** (déjà en place)
+   - Les variables d'environnement sont configurées directement dans Coolify
+   - Pas besoin de validation des env vars au démarrage (gérées par Coolify)
 
 10. **Analytics PostHog**
     - Ajouter la clé PostHog

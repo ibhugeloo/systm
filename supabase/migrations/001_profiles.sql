@@ -5,6 +5,8 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   full_name text NOT NULL,
   role text NOT NULL CHECK (role IN ('admin', 'team_member', 'client')),
   avatar_url text,
+  password_hash text,
+  settings jsonb,
   created_at timestamp with time zone DEFAULT now()
 );
 
@@ -16,5 +18,5 @@ CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
 -- Grant permissions
-GRANT SELECT, INSERT, UPDATE ON public.profiles TO authenticated;
-GRANT DELETE ON public.profiles TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.profiles TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.profiles TO authenticated;

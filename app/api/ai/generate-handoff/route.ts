@@ -3,9 +3,15 @@ import { createClient } from '@/lib/supabase/server';
 import { callClaude } from '@/lib/ai/claude';
 import { getHandoffGenerationPrompt } from '@/lib/ai/prompts/handoff-generation';
 import { Client, ConversationMessage } from '@/types/database';
+import { getAuthSession } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getAuthSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
+    }
+
     const body = await request.json();
     const { clientId } = body;
 
