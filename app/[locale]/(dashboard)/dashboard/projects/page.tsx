@@ -63,7 +63,7 @@ export default async function ProjectsPage({ params }: ProjectsPageProps) {
             {count} projet{count > 1 ? 's' : ''} en cours
           </p>
         </div>
-        <Link href={`/${locale}/dashboard/projects/new/onboarding`}>
+        <Link href={`/${locale}/dashboard/projects/new`}>
           <Button className="gap-2 shadow-sm">
             <Plus className="h-4 w-4" />
             Nouveau projet
@@ -79,7 +79,7 @@ export default async function ProjectsPage({ params }: ProjectsPageProps) {
               <Building2 className="h-6 w-6 text-muted-foreground" />
             </div>
             <p className="text-muted-foreground mb-4">Aucun projet pour le moment</p>
-            <Link href={`/${locale}/dashboard/projects/new/onboarding`}>
+            <Link href={`/${locale}/dashboard/projects/new`}>
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />
                 Nouveau projet
