@@ -161,7 +161,7 @@ export default async function OnboardingListPage({ params }: OnboardingPageProps
                   )}
 
                   {/* Action */}
-                  <Link href={`/${locale}/dashboard/onboarding/${client.id}`}>
+                  <Link href={`/${locale}/dashboard/onboarding/${client.id}`} className="block pt-2">
                     <Button className="w-full gap-2">
                       <Eye className="h-4 w-4" />
                       Voir l&apos;Onboarding
