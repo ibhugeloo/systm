@@ -3,7 +3,8 @@
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { ArrowLeft, Check, FileText, KeyRound, Scale, Rocket, PackageCheck, CreditCard, User } from 'lucide-react';
+import { Check, FileText, KeyRound, Scale, Rocket, PackageCheck, CreditCard, User } from 'lucide-react';
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -34,7 +35,7 @@ const WIDGET_SECTIONS: WidgetSection[] = [
     id: 'cadrage',
     title: 'Cadrage & Paiement',
     icon: CreditCard,
-    iconColor: 'text-blue-600 bg-blue-50',
+    iconColor: 'text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400',
     items: [
       { key: 'client_brief_done', label: 'Infos Client & Brief' },
       { key: 'devis_sent', label: 'Devis & Acompte (20%)' },
@@ -45,7 +46,7 @@ const WIDGET_SECTIONS: WidgetSection[] = [
     id: 'tech_accounts',
     title: 'Comptes Techniques',
     icon: KeyRound,
-    iconColor: 'text-amber-600 bg-amber-50',
+    iconColor: 'text-amber-600 bg-amber-50 dark:bg-amber-900/30 dark:text-amber-400',
     items: [
       { key: 'github_setup', label: 'GitHub' },
       { key: 'supabase_keys', label: 'Supabase' },
@@ -57,7 +58,7 @@ const WIDGET_SECTIONS: WidgetSection[] = [
     id: 'content',
     title: 'Contenu & Légal',
     icon: FileText,
-    iconColor: 'text-violet-600 bg-violet-50',
+    iconColor: 'text-violet-600 bg-violet-50 dark:bg-violet-900/30 dark:text-violet-400',
     items: [
       { key: 'logo_received', label: 'Logo' },
       { key: 'brand_guidelines_received', label: 'Charte Graphique' },
@@ -73,7 +74,7 @@ const WIDGET_SECTIONS: WidgetSection[] = [
     id: 'dev',
     title: 'Développement & Livraison',
     icon: Rocket,
-    iconColor: 'text-emerald-600 bg-emerald-50',
+    iconColor: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400',
     items: [
       { key: 'functional_tests', label: 'Développement & Tests' },
       { key: 'responsive_verified', label: 'Responsive Vérifié' },
@@ -90,13 +91,13 @@ const WIDGET_SECTIONS: WidgetSection[] = [
 const ALL_KEYS = WIDGET_SECTIONS.flatMap((s) => s.items.map((i) => i.key));
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  onboarding: { label: 'Onboarding', color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200' },
-  mvp_generated: { label: 'MVP Généré', color: 'text-violet-700', bg: 'bg-violet-50 border-violet-200' },
-  demo_scheduled: { label: 'Démo Prévue', color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' },
-  demo_done: { label: 'Démo Terminée', color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
-  handoff_sent: { label: 'Handoff Envoyé', color: 'text-cyan-700', bg: 'bg-cyan-50 border-cyan-200' },
-  in_production: { label: 'En Production', color: 'text-orange-700', bg: 'bg-orange-50 border-orange-200' },
-  closed: { label: 'Clôturé', color: 'text-slate-600', bg: 'bg-slate-50 border-slate-200' },
+  onboarding: { label: 'Onboarding', color: 'text-blue-700 dark:text-blue-300', bg: 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800' },
+  mvp_generated: { label: 'MVP Généré', color: 'text-violet-700 dark:text-violet-300', bg: 'bg-violet-50 border-violet-200 dark:bg-violet-900/20 dark:border-violet-800' },
+  demo_scheduled: { label: 'Démo Prévue', color: 'text-amber-700 dark:text-amber-300', bg: 'bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800' },
+  demo_done: { label: 'Démo Terminée', color: 'text-emerald-700 dark:text-emerald-300', bg: 'bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-800' },
+  handoff_sent: { label: 'Handoff Envoyé', color: 'text-cyan-700 dark:text-cyan-300', bg: 'bg-cyan-50 border-cyan-200 dark:bg-cyan-900/20 dark:border-cyan-800' },
+  in_production: { label: 'En Production', color: 'text-orange-700 dark:text-orange-300', bg: 'bg-orange-50 border-orange-200 dark:bg-orange-900/20 dark:border-orange-800' },
+  closed: { label: 'Clôturé', color: 'text-slate-600 dark:text-slate-400', bg: 'bg-slate-50 border-slate-200 dark:bg-slate-800/20 dark:border-slate-700' },
 };
 
 export default function OnboardingDetailContent({ locale, client }: OnboardingDetailContentProps) {
@@ -127,13 +128,25 @@ export default function OnboardingDetailContent({ locale, client }: OnboardingDe
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <Link
-          href={`/${locale}/dashboard/onboarding`}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          Retour aux onboardings
-        </Link>
+        <Breadcrumb className="mb-4">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href={`/${locale}/dashboard`}>Dashboard</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href={`/${locale}/dashboard/onboarding`}>Onboarding</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{client.company_name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
 
         <div className="flex items-center gap-3">
           <h1 className="text-3xl font-bold tracking-tight">{client.company_name}</h1>

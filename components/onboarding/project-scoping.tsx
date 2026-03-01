@@ -42,7 +42,7 @@ const CHECKLIST_SECTIONS: ChecklistSection[] = [
     id: 'content',
     titleKey: 'section_content',
     icon: FileText,
-    iconColor: 'text-blue-600 bg-blue-50',
+    iconColor: 'text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400',
     items: [
       { key: 'logo_received', labelKey: 'check_logo_received' },
       { key: 'brand_guidelines_received', labelKey: 'check_brand_guidelines_received' },
@@ -59,7 +59,7 @@ const CHECKLIST_SECTIONS: ChecklistSection[] = [
     id: 'access',
     titleKey: 'section_access',
     icon: KeyRound,
-    iconColor: 'text-amber-600 bg-amber-50',
+    iconColor: 'text-amber-600 bg-amber-50 dark:bg-amber-900/30 dark:text-amber-400',
     items: [
       { key: 'dns_access', labelKey: 'check_dns_access' },
       { key: 'google_search_console', labelKey: 'check_google_search_console' },
@@ -74,7 +74,7 @@ const CHECKLIST_SECTIONS: ChecklistSection[] = [
     id: 'compliance',
     titleKey: 'section_compliance',
     icon: Scale,
-    iconColor: 'text-violet-600 bg-violet-50',
+    iconColor: 'text-violet-600 bg-violet-50 dark:bg-violet-900/30 dark:text-violet-400',
     items: [
       { key: 'legal_mentions', labelKey: 'check_legal_mentions' },
       { key: 'privacy_policy', labelKey: 'check_privacy_policy' },
@@ -87,7 +87,7 @@ const CHECKLIST_SECTIONS: ChecklistSection[] = [
     id: 'preprod',
     titleKey: 'section_preprod',
     icon: Rocket,
-    iconColor: 'text-orange-600 bg-orange-50',
+    iconColor: 'text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400',
     items: [
       { key: 'functional_tests', labelKey: 'check_functional_tests' },
       { key: 'responsive_verified', labelKey: 'check_responsive_verified' },
@@ -105,7 +105,7 @@ const CHECKLIST_SECTIONS: ChecklistSection[] = [
     id: 'delivery',
     titleKey: 'section_delivery',
     icon: PackageCheck,
-    iconColor: 'text-emerald-600 bg-emerald-50',
+    iconColor: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400',
     items: [
       { key: 'client_validated', labelKey: 'check_client_validated' },
       { key: 'final_invoice_paid', labelKey: 'check_final_invoice_paid' },
@@ -256,7 +256,7 @@ export function ProjectScoping({
                       className={cn(
                         'flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-sm transition-all',
                         isChecked
-                          ? 'bg-emerald-50 text-emerald-800'
+                          ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200'
                           : 'bg-muted/30 text-foreground hover:bg-muted/50'
                       )}
                     >

@@ -48,7 +48,7 @@ export default function ConversationMessageComponent({
     if (isAI) {
       return {
         container: "justify-start",
-        bubble: "bg-purple-100 text-purple-900",
+        bubble: "bg-purple-100 text-purple-900 dark:bg-purple-900/30 dark:text-purple-200",
       }
     }
     if (isCurrentUser) {
@@ -59,7 +59,7 @@ export default function ConversationMessageComponent({
     }
     return {
       container: "justify-start",
-      bubble: "bg-gray-100 text-gray-900",
+      bubble: "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-200",
     }
   }
 
@@ -86,21 +86,21 @@ export default function ConversationMessageComponent({
       <div className="max-w-xs">
         {isAI && (
           <div className="flex items-center gap-2 mb-1">
-            <Bot className="h-4 w-4 text-purple-600" />
-            <span className="text-xs font-semibold text-purple-600">
+            <Bot className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+            <span className="text-xs font-semibold text-purple-600 dark:text-purple-400">
               {getRoleName()}
             </span>
           </div>
         )}
         {!isAI && !isCurrentUser && (
-          <div className="text-xs font-semibold text-gray-600 mb-1">
+          <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
             {getRoleName()}
           </div>
         )}
         <div className={`rounded-lg px-3 py-2 ${styles.bubble}`}>
           <p className="text-sm break-words">{message.content}</p>
         </div>
-        <div className="text-xs text-gray-500 mt-1 px-1">
+        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 px-1">
           {timestamp}
         </div>
       </div>

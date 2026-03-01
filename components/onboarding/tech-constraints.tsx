@@ -184,7 +184,7 @@ export function TechConstraints({
                 <p className="text-sm font-medium">{service.name}</p>
                 <p className="text-xs text-muted-foreground truncate">{service.description}</p>
               </div>
-              <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full flex-shrink-0">
+              <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400 px-2 py-0.5 rounded-full flex-shrink-0">
                 {dict.stack_included}
               </span>
             </div>

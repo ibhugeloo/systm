@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import {
-  ArrowLeft,
   Building2,
   Mail,
   User,
@@ -40,10 +40,10 @@ interface ClientDetailContentProps {
 }
 
 const REQUEST_STATUS: Record<string, { label: string; className: string }> = {
-  pending: { label: 'En attente', className: 'bg-amber-100 text-amber-700' },
-  in_review: { label: 'En cours', className: 'bg-blue-100 text-blue-700' },
-  done: { label: 'Terminé', className: 'bg-emerald-100 text-emerald-700' },
-  rejected: { label: 'Rejeté', className: 'bg-red-100 text-red-700' },
+  pending: { label: 'En attente', className: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200' },
+  in_review: { label: 'En cours', className: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200' },
+  done: { label: 'Terminé', className: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200' },
+  rejected: { label: 'Rejeté', className: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200' },
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -99,13 +99,25 @@ export default function ClientDetailContent({
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <Link
-        href={`/${locale}/dashboard/clients`}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft className="h-3.5 w-3.5" />
-        Retour aux clients
-      </Link>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href={`/${locale}/dashboard`}>Dashboard</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href={`/${locale}/dashboard/clients`}>Clients</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{client.company_name}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       {/* Header */}
       <div className="flex items-start justify-between">

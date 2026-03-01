@@ -165,7 +165,7 @@ export default function ConversationPanel({
   if (!isOpen) return null
 
   return (
-    <div className="fixed right-0 top-0 h-screen w-[420px] bg-background shadow-2xl border-l flex flex-col z-40">
+    <div className="fixed right-0 top-0 h-screen w-full sm:w-[420px] bg-background shadow-2xl border-l flex flex-col z-40">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b bg-muted/30">
         <div className="flex items-center gap-2.5">

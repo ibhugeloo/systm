@@ -2,8 +2,10 @@ export const dynamic = 'force-dynamic';
 
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 
 interface RequestsPageProps {
   params: Promise<{
@@ -13,9 +15,9 @@ interface RequestsPageProps {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  low: 'bg-gray-100 text-gray-800',
-  medium: 'bg-yellow-100 text-yellow-800',
-  high: 'bg-red-100 text-red-800',
+  low: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
+  medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+  high: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -56,6 +58,26 @@ export default async function RequestsPage({ params }: RequestsPageProps) {
 
   return (
     <div className="space-y-6">
+      <Breadcrumb className="mb-6">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href={`/${locale}/dashboard`}>Dashboard</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href={`/${locale}/dashboard/projects/${clientId}`}>{client.company_name}</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Requêtes</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
       <div>
         <h1 className="text-3xl font-bold">Requêtes - {client.company_name}</h1>
         <p className="text-muted-foreground mt-1">

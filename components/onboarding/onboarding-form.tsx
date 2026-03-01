@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { TechConstraints } from './tech-constraints';
 import { ProjectScoping } from './project-scoping';
@@ -9,7 +9,10 @@ import { cn } from '@/lib/utils';
 import { OnboardingFormData } from '@/types/onboarding';
 import { Step3Schema } from '@/lib/validation/onboarding-schemas';
 import { ZodError } from 'zod';
-import { Cpu, ClipboardCheck, CreditCard, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Cpu, ClipboardCheck, CreditCard, ChevronRight, ChevronLeft, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+
+const DRAFT_KEY = 'onboarding-draft';
 
 interface Dictionary {
   onboarding: Record<string, string>;
@@ -44,6 +47,50 @@ export function OnboardingForm({
   const [currentStep, setCurrentStep] = useState<StepNumber>(1);
   const [formData, setFormData] = useState<Partial<OnboardingFormData>>(initialData);
   const [errors, setErrors] = useState<FormErrors>({});
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isInitializedRef = useRef(false);
+
+  // Restore draft on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      if (saved) {
+        const { formData: savedData, currentStep: savedStep } = JSON.parse(saved);
+        if (savedData && Object.keys(savedData).length > 0) {
+          setFormData(savedData);
+          if (savedStep) setCurrentStep(savedStep as StepNumber);
+          toast.success('Brouillon restauré');
+        }
+      }
+    } catch {
+      // ignore corrupted localStorage
+    }
+    isInitializedRef.current = true;
+  }, []);
+
+  // Save draft on changes (debounced 500ms)
+  useEffect(() => {
+    if (!isInitializedRef.current) return;
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(() => {
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({ formData, currentStep }));
+      } catch {
+        // ignore full localStorage
+      }
+    }, 500);
+    return () => {
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    };
+  }, [formData, currentStep]);
+
+  const clearDraft = useCallback(() => {
+    localStorage.removeItem(DRAFT_KEY);
+    setFormData({});
+    setCurrentStep(1);
+    setErrors({});
+    toast.success('Brouillon effacé');
+  }, []);
 
   const validateStep = useCallback(
     (step: StepNumber): boolean => {
@@ -222,6 +269,19 @@ export function OnboardingForm({
             <ChevronRight className="h-4 w-4" />
           </Button>
         )}
+      </div>
+
+      {/* Clear draft */}
+      <div className="flex justify-center">
+        <Button
+          onClick={clearDraft}
+          variant="ghost"
+          size="sm"
+          className="text-destructive hover:text-destructive gap-2"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+          Effacer le brouillon
+        </Button>
       </div>
 
       {/* Submit Error */}

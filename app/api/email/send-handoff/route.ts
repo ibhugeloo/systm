@@ -2,12 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getResendClient } from '@/lib/email/resend';
 import { getAuthSession } from '@/lib/auth';
+import { rateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
     const session = await getAuthSession();
     if (!session) {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
+    }
+
+    const limiter = rateLimit(`email:${session.user.id}`, { interval: 60 * 60 * 1000, maxRequests: 10 });
+    if (!limiter.success) {
+      return NextResponse.json(
+        { error: 'Limite d\'envoi atteinte. Réessayez plus tard.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil(limiter.resetIn / 1000)) } }
+      );
     }
 
     const body = await request.json();

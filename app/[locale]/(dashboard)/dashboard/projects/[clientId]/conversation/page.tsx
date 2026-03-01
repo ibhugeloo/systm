@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation"
+import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import ConversationPanel from "@/components/conversation/conversation-panel"
 import ExportMarkdown from "@/components/conversation/export-markdown"
 import ContextSummary from "@/components/conversation/context-summary"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 
 interface ConversationPageProps {
   params: Promise<{
@@ -56,6 +58,26 @@ export default async function ConversationPage({
 
   return (
     <div className="space-y-6">
+      <Breadcrumb className="mb-6">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href={`/${locale}/dashboard`}>Dashboard</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href={`/${locale}/dashboard/projects/${clientId}`}>{client.company_name}</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Discussion</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Discussion - {client.company_name}</h1>
         <ExportMarkdown clientId={clientId} />

@@ -4,12 +4,21 @@ import { callClaude } from '@/lib/ai/claude';
 import { getHandoffGenerationPrompt } from '@/lib/ai/prompts/handoff-generation';
 import { Client, ConversationMessage } from '@/types/database';
 import { getAuthSession } from '@/lib/auth';
+import { rateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
     const session = await getAuthSession();
     if (!session) {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
+    }
+
+    const limiter = rateLimit(`ai:${session.user.id}`, { interval: 60 * 60 * 1000, maxRequests: 20 });
+    if (!limiter.success) {
+      return NextResponse.json(
+        { error: 'Limite d\'appels IA atteinte. Réessayez plus tard.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil(limiter.resetIn / 1000)) } }
+      );
     }
 
     const body = await request.json();

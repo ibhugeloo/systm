@@ -33,9 +33,9 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-  low: 'bg-gray-100 text-gray-800',
-  medium: 'bg-yellow-100 text-yellow-800',
-  high: 'bg-red-100 text-red-800',
+  low: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
+  medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+  high: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
 };
 
 export default function RequestList({ requests, locale = 'fr' }: RequestListProps) {

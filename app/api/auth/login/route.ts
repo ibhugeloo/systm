@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AUTH_COOKIE_NAME, validateCredentials } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
+import { rateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
+  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+  const limiter = rateLimit(`login:${ip}`, { interval: 15 * 60 * 1000, maxRequests: 5 });
+
+  if (!limiter.success) {
+    return NextResponse.json(
+      { error: 'Trop de tentatives. Réessayez dans quelques minutes.' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil(limiter.resetIn / 1000)) } }
+    );
+  }
+
   const { email, password } = await request.json();
 
   if (!email || !password) {
@@ -24,7 +35,6 @@ export async function POST(request: NextRequest) {
   // Log the login
   try {
     const supabase = await createClient();
-    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
     await supabase.from('login_logs').insert({

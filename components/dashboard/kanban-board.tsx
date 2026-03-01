@@ -28,13 +28,13 @@ interface KanbanBoardProps {
 }
 
 const COLUMN_COLORS: Record<string, { dot: string; header: string }> = {
-  onboarding: { dot: "bg-blue-500", header: "border-blue-200" },
-  mvp_generated: { dot: "bg-violet-500", header: "border-violet-200" },
-  demo_scheduled: { dot: "bg-amber-500", header: "border-amber-200" },
-  demo_done: { dot: "bg-emerald-500", header: "border-emerald-200" },
-  handoff_sent: { dot: "bg-cyan-500", header: "border-cyan-200" },
-  in_production: { dot: "bg-orange-500", header: "border-orange-200" },
-  closed: { dot: "bg-slate-400", header: "border-slate-200" },
+  onboarding: { dot: "bg-blue-500", header: "border-blue-200 dark:border-blue-800" },
+  mvp_generated: { dot: "bg-violet-500", header: "border-violet-200 dark:border-violet-800" },
+  demo_scheduled: { dot: "bg-amber-500", header: "border-amber-200 dark:border-amber-800" },
+  demo_done: { dot: "bg-emerald-500", header: "border-emerald-200 dark:border-emerald-800" },
+  handoff_sent: { dot: "bg-cyan-500", header: "border-cyan-200 dark:border-cyan-800" },
+  in_production: { dot: "bg-orange-500", header: "border-orange-200 dark:border-orange-800" },
+  closed: { dot: "bg-slate-400", header: "border-slate-200 dark:border-slate-800" },
 }
 
 function getInitials(name: string): string {

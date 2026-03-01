@@ -4,8 +4,8 @@ import { getDictionary } from '@/lib/get-dictionaries';
 import { createClient } from '@/lib/supabase/server';
 import { OnboardingForm } from '@/components/onboarding/onboarding-form';
 import { Locale } from '@/lib/i18n-config';
-import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 
 interface NewOnboardingPageProps {
   params: Promise<{ locale: Locale }>;
@@ -25,16 +25,25 @@ export default async function NewOnboardingPage({ params }: NewOnboardingPagePro
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/30 py-10 px-4">
       <div className="container max-w-4xl mx-auto">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 text-sm mb-10">
-          <Link
-            href={`/${locale}/dashboard/onboarding`}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Onboarding
-          </Link>
-          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" />
-          <span className="text-foreground font-medium">Nouvel Onboarding</span>
-        </nav>
+        <Breadcrumb className="mb-10">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href={`/${locale}/dashboard`}>Dashboard</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href={`/${locale}/dashboard/onboarding`}>Onboarding</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Nouvel Onboarding</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
 
         {/* Header */}
         <div className="text-center mb-12">

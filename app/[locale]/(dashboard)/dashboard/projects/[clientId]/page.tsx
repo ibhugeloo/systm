@@ -6,13 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   MessageCircle,
-  ArrowLeft,
   Building2,
   Mail,
   User,
   ClipboardList,
 } from 'lucide-react';
 import Link from 'next/link';
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import ClientStatusSelect from '@/components/clients/client-status-select';
 import ClientInfoEditor from '@/components/clients/client-info-editor';
 import ProjectFigmaPrompt from './project-figma-prompt';
@@ -25,8 +25,8 @@ interface ProjectPageProps {
 }
 
 const QUICK_ACTIONS = [
-  { key: 'conversation', label: 'Discussion', icon: MessageCircle, color: 'text-emerald-600 bg-emerald-50 group-hover:bg-emerald-100' },
-  { key: 'requests', label: 'Requêtes', icon: ClipboardList, color: 'text-amber-600 bg-amber-50 group-hover:bg-amber-100' },
+  { key: 'conversation', label: 'Discussion', icon: MessageCircle, color: 'text-emerald-600 bg-emerald-50 group-hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:group-hover:bg-emerald-900/50' },
+  { key: 'requests', label: 'Requêtes', icon: ClipboardList, color: 'text-amber-600 bg-amber-50 group-hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:group-hover:bg-amber-900/50' },
 ];
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
@@ -64,13 +64,25 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <Link
-          href={`/${locale}/dashboard/projects`}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          Retour aux projets
-        </Link>
+        <Breadcrumb className="mb-4">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href={`/${locale}/dashboard`}>Dashboard</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href={`/${locale}/dashboard/projects`}>Projets</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{client.company_name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
 
         <div className="flex items-start justify-between">
           <div>

@@ -70,15 +70,15 @@ export default function ContextSummary({
   }
 
   return (
-    <Card className="p-3 bg-blue-50 border-blue-200">
+    <Card className="p-3 bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-blue-900">
+          <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-200">
             Résumé du contexte
           </h3>
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="text-blue-600 hover:text-blue-900"
+            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200"
           >
             {isCollapsed ? (
               <ChevronDown className="h-4 w-4" />
@@ -91,13 +91,13 @@ export default function ContextSummary({
         {!isCollapsed && (
           <>
             {summary && (
-              <div className="text-xs text-blue-800 leading-relaxed">
+              <div className="text-xs text-blue-800 dark:text-blue-300 leading-relaxed">
                 {summary}
               </div>
             )}
 
             {lastUpdated && (
-              <div className="text-xs text-blue-600">
+              <div className="text-xs text-blue-600 dark:text-blue-400">
                 Mis à jour:{" "}
                 {new Date(lastUpdated).toLocaleDateString("fr-FR", {
                   month: "short",
