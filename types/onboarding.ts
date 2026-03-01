@@ -19,6 +19,7 @@ export interface AiEstimation {
 // --- Step Data ---
 
 export interface OnboardingStep1Data {
+  client_id: string;
   company_name: string;
   sector: string;
   problem_description: string;

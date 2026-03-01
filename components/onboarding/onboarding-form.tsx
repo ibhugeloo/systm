@@ -20,6 +20,7 @@ interface Dictionary {
 interface OnboardingFormProps {
   locale: string;
   dictionary: Dictionary;
+  clients: Array<{ id: string; company_name: string; sector?: string }>;
   initialData?: Partial<OnboardingFormData>;
 }
 
@@ -30,6 +31,7 @@ const STEP_ICONS = [Building2, Cpu, ClipboardCheck, CreditCard];
 
 export function OnboardingForm({
   dictionary,
+  clients,
   initialData = {},
 }: OnboardingFormProps): React.ReactElement {
   const dict = dictionary.onboarding;
@@ -51,6 +53,7 @@ export function OnboardingForm({
       try {
         if (step === 1) {
           Step1Schema.parse({
+            client_id: formData.client_id,
             company_name: formData.company_name,
             sector: formData.sector,
             problem_description: formData.problem_description,
@@ -198,6 +201,7 @@ export function OnboardingForm({
             data={formData}
             onChange={handleStepChange}
             dictionary={dictionary}
+            clients={clients}
             errors={errors}
           />
         )}

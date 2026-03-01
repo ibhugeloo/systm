@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, LayoutDashboard, Users, FolderKanban, Sparkles, UserPlus, Settings, LogOut } from 'lucide-react';
+import { Menu, X, LayoutDashboard, Users, FolderKanban, ClipboardCheck, Sparkles, UserPlus, Settings, LogOut } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ const navItems: NavItem[] = [
   { label: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Clients', href: '/dashboard/clients', icon: Users },
   { label: 'Projets', href: '/dashboard/projects', icon: FolderKanban },
+  { label: 'Onboarding', href: '/dashboard/onboarding', icon: ClipboardCheck },
   { label: 'MVP', href: '/dashboard/mvps', icon: Sparkles },
   { label: 'Utilisateurs', href: '/dashboard/users', icon: UserPlus },
   { label: 'Paramètres', href: '/settings', icon: Settings },

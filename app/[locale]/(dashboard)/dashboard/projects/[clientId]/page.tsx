@@ -2,27 +2,20 @@ export const dynamic = 'force-dynamic';
 
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
-import { getDictionary } from '@/lib/get-dictionaries';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  FileText,
   MessageCircle,
-  Sparkles,
   ArrowLeft,
   Building2,
   Mail,
   User,
-  Wallet,
-  Clock,
-  Code2,
-  Eye,
   ClipboardList,
 } from 'lucide-react';
 import Link from 'next/link';
 import ClientStatusSelect from '@/components/clients/client-status-select';
 import ClientInfoEditor from '@/components/clients/client-info-editor';
+import ProjectFigmaPrompt from './project-figma-prompt';
 
 interface ProjectPageProps {
   params: Promise<{
@@ -32,8 +25,6 @@ interface ProjectPageProps {
 }
 
 const QUICK_ACTIONS = [
-  { key: 'onboarding', label: 'Onboarding', icon: FileText, color: 'text-blue-600 bg-blue-50 group-hover:bg-blue-100' },
-  { key: 'generate-prompt', label: 'Prompt Figma', icon: Sparkles, color: 'text-violet-600 bg-violet-50 group-hover:bg-violet-100' },
   { key: 'conversation', label: 'Discussion', icon: MessageCircle, color: 'text-emerald-600 bg-emerald-50 group-hover:bg-emerald-100' },
   { key: 'requests', label: 'Requêtes', icon: ClipboardList, color: 'text-amber-600 bg-amber-50 group-hover:bg-amber-100' },
 ];
@@ -41,7 +32,6 @@ const QUICK_ACTIONS = [
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { locale, clientId } = await params;
   const supabase = await createClient();
-  await getDictionary(locale as 'fr');
 
   const { data: client, error } = await supabase
     .from('clients')
@@ -60,7 +50,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     .order('created_at', { ascending: false })
     .limit(5);
 
-  // Check if there's a generated prompt
   const { data: mvp } = await supabase
     .from('mvps')
     .select('id, generated_prompt, created_at')
@@ -73,7 +62,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumb + Header */}
+      {/* Header */}
       <div>
         <Link
           href={`/${locale}/dashboard/projects`}
@@ -126,7 +115,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-3 max-w-xs">
         {QUICK_ACTIONS.map((action) => (
           <Link key={action.key} href={`${basePath}/${action.key}`}>
             <Card className="group hover:shadow-md transition-all duration-200 cursor-pointer border-transparent hover:border-primary/10">
@@ -141,119 +130,24 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         ))}
       </div>
 
-      {/* Content Grid */}
+      {/* Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Info */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-muted-foreground" />
-              Informations du projet
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            {client.problem_description && (
-              <div className="bg-muted/50 rounded-lg p-4">
-                <p className="text-sm font-medium text-muted-foreground mb-1">Problème identifié</p>
-                <p className="text-sm leading-relaxed">{client.problem_description}</p>
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-              {client.budget_range && (
-                <div className="flex items-center gap-3 p-3 rounded-lg border bg-card">
-                  <div className="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
-                    <Wallet className="h-4 w-4 text-emerald-600" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Budget</p>
-                    <p className="text-sm font-medium truncate">{client.budget_range}</p>
-                  </div>
-                </div>
-              )}
-              {client.timeline && (
-                <div className="flex items-center gap-3 p-3 rounded-lg border bg-card">
-                  <div className="h-8 w-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
-                    <Clock className="h-4 w-4 text-amber-600" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Délai</p>
-                    <p className="text-sm font-medium truncate">{client.timeline}</p>
-                  </div>
-                </div>
-              )}
-              {client.contact_email && (
-                <div className="flex items-center gap-3 p-3 rounded-lg border bg-card">
-                  <div className="h-8 w-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                    <Eye className="h-4 w-4 text-blue-600" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Contact</p>
-                    <p className="text-sm font-medium truncate">{client.contact_email}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {client.tech_stack && client.tech_stack.length > 0 && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
-                  <Code2 className="h-3.5 w-3.5" />
-                  Stack technique
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {client.tech_stack.map((tech: string) => (
-                    <Badge key={tech} variant="secondary" className="font-mono text-xs">
-                      {tech}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* Figma Make Prompt */}
+        <div className="lg:col-span-2">
+          <ProjectFigmaPrompt
+            clientId={clientId}
+            client={{
+              company_name: client.company_name,
+              sector: client.sector || '',
+              problem_description: client.problem_description || '',
+            }}
+            existingPrompt={mvp?.generated_prompt || null}
+            mvpId={mvp?.id || null}
+          />
+        </div>
 
         {/* Sidebar */}
         <div className="space-y-4">
-          {/* Prompt Figma Status */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-violet-500" />
-                Prompt Figma
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {mvp?.generated_prompt ? (
-                <div className="space-y-3">
-                  <Badge variant="outline" className="text-xs text-emerald-600 border-emerald-200">
-                    Prompt généré
-                  </Badge>
-                  <Link href={`${basePath}/generate-prompt`}>
-                    <Button size="sm" className="w-full gap-2">
-                      <Eye className="h-3.5 w-3.5" />
-                      Voir le prompt
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                <div className="text-center py-3">
-                  <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center mx-auto mb-2">
-                    <Sparkles className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">Aucun prompt généré</p>
-                  <Link href={`${basePath}/generate-prompt`}>
-                    <Button size="sm" variant="outline" className="gap-2">
-                      <Sparkles className="h-3.5 w-3.5" />
-                      Générer
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Recent Requests */}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2">

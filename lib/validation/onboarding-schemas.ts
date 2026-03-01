@@ -6,10 +6,12 @@ import { z } from 'zod';
 
 // Step 1 — Problème
 export const Step1Schema = z.object({
+  client_id: z
+    .string()
+    .min(1, 'Veuillez sélectionner un client'),
   company_name: z
     .string()
-    .min(1, 'Le nom de l\'entreprise est requis')
-    .min(2, 'Le nom doit contenir au moins 2 caractères'),
+    .min(1, 'Le nom de l\'entreprise est requis'),
   sector: z
     .string()
     .min(1, 'Le secteur est requis')

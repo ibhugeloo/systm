@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { ArrowLeft, Sparkles, Copy, Check, Loader2, RefreshCw } from 'lucide-react';
+import { Sparkles, Copy, Check, Loader2, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -10,8 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
-interface GeneratePromptContentProps {
-  locale: string;
+interface ProjectFigmaPromptProps {
   clientId: string;
   client: {
     company_name: string;
@@ -22,16 +20,16 @@ interface GeneratePromptContentProps {
   mvpId: string | null;
 }
 
-export default function GeneratePromptContent({
-  locale,
+export default function ProjectFigmaPrompt({
   clientId,
   client,
   existingPrompt,
   mvpId,
-}: GeneratePromptContentProps) {
+}: ProjectFigmaPromptProps) {
   const [companyName, setCompanyName] = useState(client.company_name || '');
   const [sector, setSector] = useState(client.sector || '');
   const [problemDescription, setProblemDescription] = useState(client.problem_description || '');
+  const [features, setFeatures] = useState('');
   const [prompt, setPrompt] = useState(existingPrompt || '');
   const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -44,13 +42,17 @@ export default function GeneratePromptContent({
 
     setIsGenerating(true);
     try {
+      const fullDescription = features
+        ? `${problemDescription}\n\nFonctionnalités souhaitées :\n${features}`
+        : problemDescription;
+
       const res = await fetch('/api/ai/generate-figma-prompt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           company_name: companyName,
           sector,
-          problem_description: problemDescription,
+          problem_description: fullDescription,
         }),
       });
 
@@ -60,21 +62,6 @@ export default function GeneratePromptContent({
 
       const data = await res.json();
       setPrompt(data.prompt);
-
-      // Save prompt to mvps table
-      await fetch(`/api/ai/generate-figma-prompt`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          company_name: companyName,
-          sector,
-          problem_description: problemDescription,
-          save: true,
-          clientId,
-          mvpId,
-        }),
-      });
-
       toast.success('Prompt généré avec succès');
     } catch {
       toast.error('Erreur lors de la génération du prompt');
@@ -91,27 +78,14 @@ export default function GeneratePromptContent({
   };
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      {/* Breadcrumb */}
-      <Link
-        href={`/${locale}/dashboard/projects/${clientId}`}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft className="h-3.5 w-3.5" />
-        Retour au projet
-      </Link>
-
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Prompt Figma Make</h1>
-        <p className="text-muted-foreground mt-1">
-          Générez un prompt optimisé pour créer la maquette dans Figma Make
-        </p>
-      </div>
-
+    <div className="space-y-4">
       {/* Input Form */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Informations du projet</CardTitle>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-violet-500" />
+            Prompt Figma Make
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -138,7 +112,16 @@ export default function GeneratePromptContent({
               value={problemDescription}
               onChange={(e) => setProblemDescription(e.target.value)}
               placeholder="Décrivez le problème que le client souhaite résoudre..."
-              rows={4}
+              rows={3}
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Fonctionnalités souhaitées</label>
+            <Textarea
+              value={features}
+              onChange={(e) => setFeatures(e.target.value)}
+              placeholder="Ex: Catalogue produits, panier d'achat, intégration Stripe, espace client..."
+              rows={3}
             />
           </div>
           <Button
@@ -166,14 +149,31 @@ export default function GeneratePromptContent({
         </CardContent>
       </Card>
 
+      {/* Loading */}
+      {isGenerating && (
+        <Card className="border-violet-200 dark:border-violet-800">
+          <CardContent className="flex flex-col items-center justify-center py-12 gap-4">
+            <div className="h-12 w-12 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
+              <Loader2 className="h-6 w-6 text-violet-600 animate-spin" />
+            </div>
+            <div className="text-center">
+              <p className="font-semibold">Génération en cours...</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                L&apos;IA analyse le projet et crée un prompt optimisé pour Figma Make
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Generated Prompt */}
-      {prompt && (
+      {prompt && !isGenerating && (
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-purple-500" />
-                Prompt Figma Make
+                <Sparkles className="h-4 w-4 text-violet-500" />
+                Résultat
               </CardTitle>
               <Button
                 variant="outline"
@@ -200,23 +200,6 @@ export default function GeneratePromptContent({
               <pre className="whitespace-pre-wrap text-sm leading-relaxed font-mono">
                 {prompt}
               </pre>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Loading State */}
-      {isGenerating && (
-        <Card className="border-purple-200 dark:border-purple-800">
-          <CardContent className="flex flex-col items-center justify-center py-12 gap-4">
-            <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-              <Loader2 className="h-6 w-6 text-purple-600 animate-spin" />
-            </div>
-            <div className="text-center">
-              <p className="font-semibold">Génération en cours...</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                L&apos;IA analyse le projet et crée un prompt optimisé pour Figma Make
-              </p>
             </div>
           </CardContent>
         </Card>

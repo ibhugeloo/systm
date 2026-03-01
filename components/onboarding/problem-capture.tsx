@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useCallback } from 'react';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
@@ -21,6 +20,7 @@ interface ProblemCaptureProps {
   data: Partial<OnboardingStep1Data>;
   onChange: (data: Partial<OnboardingStep1Data>) => void;
   dictionary: Dictionary;
+  clients: Array<{ id: string; company_name: string; sector?: string }>;
   errors?: Record<string, string[]>;
 }
 
@@ -39,15 +39,24 @@ export function ProblemCapture({
   data,
   onChange,
   dictionary,
+  clients,
   errors = {},
 }: ProblemCaptureProps): React.ReactElement {
   const dict = dictionary.onboarding;
 
-  const handleCompanyNameChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      onChange({ ...data, company_name: e.target.value });
+  const handleClientChange = useCallback(
+    (clientId: string) => {
+      const client = clients.find((c) => c.id === clientId);
+      if (client) {
+        onChange({
+          ...data,
+          client_id: clientId,
+          company_name: client.company_name,
+          sector: client.sector || data.sector || '',
+        });
+      }
     },
-    [data, onChange]
+    [data, onChange, clients]
   );
 
   const handleSectorChange = useCallback(
@@ -74,24 +83,31 @@ export function ProblemCapture({
 
   return (
     <div className="space-y-6">
-      {/* Company Name */}
+      {/* Client Select */}
       <div className="space-y-2">
-        <label htmlFor="company_name" className="block text-sm font-medium">
-          {dict.company_name_label}
+        <label className="block text-sm font-medium">
+          Client
           <span className="text-destructive ml-1">*</span>
         </label>
-        <Input
-          id="company_name"
-          placeholder={dict.company_name_placeholder}
-          value={data.company_name || ''}
-          onChange={handleCompanyNameChange}
-          className={cn(
-            'h-11',
-            getFieldError('company_name') && 'border-destructive focus-visible:ring-destructive'
-          )}
-        />
-        {getFieldError('company_name') && (
-          <p className="text-sm text-destructive">{getFieldError('company_name')}</p>
+        <Select value={data.client_id || ''} onValueChange={handleClientChange}>
+          <SelectTrigger
+            className={cn(
+              'h-11',
+              getFieldError('client_id') && 'border-destructive focus-visible:ring-destructive'
+            )}
+          >
+            <SelectValue placeholder="Sélectionner un client" />
+          </SelectTrigger>
+          <SelectContent>
+            {clients.map((client) => (
+              <SelectItem key={client.id} value={client.id}>
+                {client.company_name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {getFieldError('client_id') && (
+          <p className="text-sm text-destructive">{getFieldError('client_id')}</p>
         )}
       </div>
 
@@ -157,7 +173,6 @@ export function ProblemCapture({
           <p className="text-sm text-destructive">{getFieldError('problem_description')}</p>
         )}
       </div>
-
     </div>
   );
 }
