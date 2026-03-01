@@ -1,0 +1,161 @@
+export const dynamic = 'force-dynamic';
+
+import { createClient } from '@/lib/supabase/server';
+import { getDictionary } from '@/lib/get-dictionaries';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Plus, Building2, User, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+
+interface ProjectsPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
+  onboarding: { label: 'Onboarding', color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200' },
+  mvp_generated: { label: 'MVP Généré', color: 'text-violet-700', bg: 'bg-violet-50 border-violet-200' },
+  demo_scheduled: { label: 'Démo Prévue', color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' },
+  demo_done: { label: 'Démo Terminée', color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
+  handoff_sent: { label: 'Handoff Envoyé', color: 'text-cyan-700', bg: 'bg-cyan-50 border-cyan-200' },
+  in_production: { label: 'En Production', color: 'text-orange-700', bg: 'bg-orange-50 border-orange-200' },
+  closed: { label: 'Clôturé', color: 'text-slate-600', bg: 'bg-slate-50 border-slate-200' },
+};
+
+const STATUS_PROGRESS: Record<string, number> = {
+  onboarding: 10,
+  mvp_generated: 30,
+  demo_scheduled: 50,
+  demo_done: 65,
+  handoff_sent: 80,
+  in_production: 95,
+  closed: 100,
+};
+
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+export default async function ProjectsPage({ params }: ProjectsPageProps) {
+  const { locale } = await params;
+  const supabase = await createClient();
+  const dict = await getDictionary(locale as 'fr');
+
+  const { data: clients } = await supabase
+    .from('clients')
+    .select('id, company_name, contact_name, sector, status, created_at')
+    .order('created_at', { ascending: false });
+
+  const count = clients?.length || 0;
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Projets</h1>
+          <p className="text-muted-foreground mt-1">
+            {count} projet{count > 1 ? 's' : ''} en cours
+          </p>
+        </div>
+        <Link href={`/${locale}/dashboard/projects/new/onboarding`}>
+          <Button className="gap-2 shadow-sm">
+            <Plus className="h-4 w-4" />
+            Nouveau projet
+          </Button>
+        </Link>
+      </div>
+
+      {/* Project List */}
+      {(!clients || clients.length === 0) ? (
+        <Card className="border-dashed">
+          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-4">
+              <Building2 className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground mb-4">Aucun projet pour le moment</p>
+            <Link href={`/${locale}/dashboard/projects/new/onboarding`}>
+              <Button className="gap-2">
+                <Plus className="h-4 w-4" />
+                Nouveau projet
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-3">
+          {clients.map((client) => {
+            const statusConfig = STATUS_CONFIG[client.status] || STATUS_CONFIG.onboarding;
+            const progress = STATUS_PROGRESS[client.status] || 0;
+
+            return (
+              <Link
+                key={client.id}
+                href={`/${locale}/dashboard/projects/${client.id}`}
+              >
+                <Card className="group hover:shadow-md hover:border-primary/20 transition-all duration-200 cursor-pointer">
+                  <CardContent className="flex items-center gap-4 p-4">
+                    {/* Avatar */}
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
+                      {getInitials(client.company_name)}
+                    </div>
+
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3">
+                        <p className="font-semibold truncate">{client.company_name}</p>
+                        <span className={`text-xs px-2.5 py-0.5 rounded-full border font-medium ${statusConfig.bg} ${statusConfig.color}`}>
+                          {statusConfig.label}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 mt-1.5">
+                        {client.sector && (
+                          <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <Building2 className="h-3 w-3" />
+                            {client.sector}
+                          </span>
+                        )}
+                        {client.contact_name && (
+                          <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <User className="h-3 w-3" />
+                            {client.contact_name}
+                          </span>
+                        )}
+                      </div>
+                      {/* Progress bar */}
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-primary rounded-full transition-all"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-muted-foreground font-medium">{progress}%</span>
+                      </div>
+                    </div>
+
+                    {/* Arrow */}
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <span className="text-sm text-muted-foreground hidden sm:block">
+                        {new Date(client.created_at).toLocaleDateString(locale, {
+                          day: 'numeric',
+                          month: 'short',
+                        })}
+                      </span>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}

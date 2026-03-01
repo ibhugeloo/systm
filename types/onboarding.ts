@@ -1,9 +1,7 @@
 /**
  * Onboarding form types for multi-step form flow
- * 5 étapes : Problème → MVP → Stack → Cadrage → Paiement
+ * 4 étapes : Problème → Stack → Cadrage → Paiement
  */
-
-import { MvpCanvas } from './mvp';
 
 // --- Estimation IA ---
 
@@ -24,12 +22,6 @@ export interface OnboardingStep1Data {
   company_name: string;
   sector: string;
   problem_description: string;
-}
-
-export interface OnboardingStep2Data {
-  mvp_id: string;
-  canvas_data: MvpCanvas;
-  estimation: AiEstimation;
 }
 
 export interface OnboardingStep3Data {
@@ -95,15 +87,13 @@ export interface OnboardingStep5Data {
 // --- Combined Form Data ---
 
 export interface OnboardingFormData extends OnboardingStep1Data, OnboardingStep3Data {
-  // Step 2 data stored separately (MVP canvas)
-  mvp_id?: string;
   estimation?: AiEstimation;
-  // Step 4 data
+  // Step 3 data (cadrage)
   contact_email?: string;
   contact_phone?: string;
   siret?: string;
   address?: string;
-  // Step 4 checklists (all optional)
+  // Step 3 checklists (all optional)
   logo_received?: boolean;
   brand_guidelines_received?: boolean;
   page_texts_received?: boolean;
@@ -141,7 +131,7 @@ export interface OnboardingFormData extends OnboardingStep1Data, OnboardingStep3
   training_done?: boolean;
   access_transferred?: boolean;
   maintenance_proposed?: boolean;
-  // Step 5
+  // Step 4
   payment_status?: 'pending' | 'partial' | 'paid';
   // Meta
   completed_at?: string;
@@ -151,14 +141,13 @@ export interface OnboardingFormData extends OnboardingStep1Data, OnboardingStep3
 // Individual step types for form state management
 export type OnboardingStepData =
   | OnboardingStep1Data
-  | OnboardingStep2Data
   | OnboardingStep3Data
   | OnboardingStep4Data
   | OnboardingStep5Data;
 
 // Form progress tracking
 export interface OnboardingProgress {
-  current_step: 1 | 2 | 3 | 4 | 5;
+  current_step: 1 | 2 | 3 | 4;
   completed_steps: number[];
   data: Partial<OnboardingFormData>;
 }

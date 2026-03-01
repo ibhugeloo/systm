@@ -3,7 +3,6 @@ import { createClient } from '@/lib/supabase/server';
 import { callClaude } from '@/lib/ai/claude';
 import { getHandoffGenerationPrompt } from '@/lib/ai/prompts/handoff-generation';
 import { Client, ConversationMessage } from '@/types/database';
-import { MvpCanvas } from '@/types/mvp';
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,10 +32,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fetch latest MVP
+    // Fetch latest MVP id for linking
     const { data: mvp } = await supabase
       .from('mvps')
-      .select('id, canvas_data')
+      .select('id')
       .eq('client_id', clientId)
       .order('created_at', { ascending: false })
       .limit(1)
@@ -50,12 +49,10 @@ export async function POST(request: NextRequest) {
       .single();
 
     const messages = (conversation?.messages || []) as ConversationMessage[];
-    const mvpCanvas = (mvp?.canvas_data || { blocks: [] }) as MvpCanvas;
 
     // Generate handoff via Claude
     const prompt = getHandoffGenerationPrompt({
       client: client as Client,
-      mvp: mvpCanvas,
       messages,
     });
 

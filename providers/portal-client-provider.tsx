@@ -10,13 +10,11 @@ import {
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/providers/auth-provider';
 import { Client, ClientRequest } from '@/types/database';
-import { MvpCanvas } from '@/types/mvp';
 
 interface PortalClientContextType {
   client: Client | null;
   clientId: string | null;
   conversationId: string | null;
-  mvpCanvas: MvpCanvas | null;
   isLoading: boolean;
   isProjectFinished: boolean;
   requests: ClientRequest[];
@@ -29,7 +27,6 @@ export function PortalClientProvider({ children }: { children: ReactNode }) {
 
   const [client, setClient] = useState<Client | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
-  const [mvpCanvas, setMvpCanvas] = useState<MvpCanvas | null>(null);
   const [requests, setRequests] = useState<ClientRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -78,20 +75,7 @@ export function PortalClientProvider({ children }: { children: ReactNode }) {
         setConversationId(conversation.id);
       }
 
-      // 3. Fetch most recent MVP
-      const { data: mvpData } = await supabase
-        .from('mvps')
-        .select('canvas_data')
-        .eq('client_id', clientData.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-
-      if (mvpData?.canvas_data) {
-        setMvpCanvas(mvpData.canvas_data as unknown as MvpCanvas);
-      }
-
-      // 4. Fetch recent requests
+      // 3. Fetch recent requests
       const { data: requestsData } = await supabase
         .from('client_requests')
         .select('*')
@@ -115,7 +99,6 @@ export function PortalClientProvider({ children }: { children: ReactNode }) {
         client,
         clientId: client?.id || null,
         conversationId,
-        mvpCanvas,
         isLoading: isLoading || authLoading,
         isProjectFinished,
         requests,

@@ -77,7 +77,13 @@
     "closed": "Clôturé",
     "recent_activity": "Activité récente",
     "upcoming_demos": "Démos à venir",
-    "pending_requests": "Demandes en attente"
+    "pending_requests": "Demandes en attente",
+    "recent_projects": "Projets Récents",
+    "col_project": "Projet",
+    "col_client": "Client",
+    "col_status": "Statut",
+    "col_progress": "Progression",
+    "no_projects": "Aucun projet pour le moment"
   },
   "onboarding": {
     "title": "Nouveau projet",

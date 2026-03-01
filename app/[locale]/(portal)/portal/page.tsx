@@ -16,7 +16,6 @@ import {
   CheckCircle2,
   Circle,
   ArrowRight,
-  Layout,
   PartyPopper,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -69,7 +68,7 @@ const TYPE_LABELS: Record<string, string> = {
 export default function PortalPage() {
   const params = useParams();
   const locale = (params.locale as string) || 'fr';
-  const { client, mvpCanvas, requests, isLoading, isProjectFinished } = usePortalClient();
+  const { client, requests, isLoading, isProjectFinished } = usePortalClient();
 
   if (isLoading) {
     return (
@@ -257,24 +256,7 @@ export default function PortalPage() {
       </Card>
 
       {/* Quick Actions */}
-      <div className={`grid grid-cols-1 gap-4 ${mvpCanvas ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
-        {mvpCanvas && (
-          <Link href={`/${locale}/portal/mockup`}>
-            <Card className="group hover:shadow-lg hover:border-indigo-200 transition-all duration-200 cursor-pointer h-full">
-              <CardContent className="flex flex-col items-center justify-center py-8 gap-3">
-                <div className="h-12 w-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/50 transition-colors">
-                  <Layout className="h-6 w-6 text-indigo-600" />
-                </div>
-                <p className="font-semibold">Maquette</p>
-                <p className="text-xs text-muted-foreground text-center">
-                  Voir la maquette de votre projet
-                </p>
-                <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" />
-              </CardContent>
-            </Card>
-          </Link>
-        )}
-
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link href={`/${locale}/portal/support`}>
           <Card className="group hover:shadow-lg hover:border-purple-200 transition-all duration-200 cursor-pointer h-full">
             <CardContent className="flex flex-col items-center justify-center py-8 gap-3">

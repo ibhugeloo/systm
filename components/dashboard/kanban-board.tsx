@@ -97,7 +97,7 @@ function DraggableCard({
       {...listeners}
       className={`transition-all duration-200 ${isDragging ? "opacity-30 scale-95" : ""}`}
     >
-      <Link href={`/${locale}/dashboard/clients/${client.id}`}>
+      <Link href={`/${locale}/dashboard/projects/${client.id}`}>
         <Card className="group hover:shadow-md hover:border-primary/20 transition-all duration-200 cursor-grab active:cursor-grabbing">
           <CardContent className="p-3">
             <div className="flex items-start gap-2.5">

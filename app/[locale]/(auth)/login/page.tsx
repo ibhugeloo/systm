@@ -8,14 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!username || !password) {
+    if (!email || !password) {
       toast.error('Veuillez remplir tous les champs');
       return;
     }
@@ -25,13 +25,19 @@ export default function LoginPage() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (!res.ok) {
         toast.error('Identifiants invalides');
       } else {
-        window.location.href = '/fr/dashboard';
+        const data = await res.json();
+        // Redirect based on role
+        if (data.profile?.role === 'client') {
+          window.location.href = '/fr/portal';
+        } else {
+          window.location.href = '/fr/dashboard';
+        }
       }
     } catch {
       toast.error('Une erreur est survenue');
@@ -65,7 +71,7 @@ export default function LoginPage() {
 
           {/* Feature pills */}
           <div className="flex flex-wrap gap-2 mt-8">
-            {['Onboarding', 'MVP Canvas', 'Pipeline', 'Portail client'].map((feature) => (
+            {['Onboarding', 'Figma Make', 'Pipeline', 'Portail client'].map((feature) => (
               <span
                 key={feature}
                 className="px-3 py-1.5 text-xs font-medium text-purple-300 bg-purple-500/10 border border-purple-500/20 rounded-full"
@@ -96,15 +102,15 @@ export default function LoginPage() {
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-2">
-              <label htmlFor="username" className="text-sm font-medium">
-                Identifiant
+              <label htmlFor="email" className="text-sm font-medium">
+                Email
               </label>
               <Input
-                id="username"
-                type="text"
-                placeholder="Votre identifiant"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                id="email"
+                type="email"
+                placeholder="votre@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 required
                 autoFocus

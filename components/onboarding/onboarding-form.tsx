@@ -3,16 +3,14 @@
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { ProblemCapture } from './problem-capture';
-import { MvpStep } from './mvp-step';
 import { TechConstraints } from './tech-constraints';
 import { ProjectScoping } from './project-scoping';
 import { PaymentStep } from './payment-step';
 import { cn } from '@/lib/utils';
-import { OnboardingFormData, AiEstimation } from '@/types/onboarding';
-import { MvpCanvas } from '@/types/mvp';
+import { OnboardingFormData } from '@/types/onboarding';
 import { Step1Schema, Step3Schema } from '@/lib/validation/onboarding-schemas';
 import { ZodError } from 'zod';
-import { Building2, Sparkles, Cpu, ClipboardCheck, CreditCard, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Building2, Cpu, ClipboardCheck, CreditCard, ChevronRight, ChevronLeft } from 'lucide-react';
 
 interface Dictionary {
   onboarding: Record<string, string>;
@@ -25,10 +23,10 @@ interface OnboardingFormProps {
   initialData?: Partial<OnboardingFormData>;
 }
 
-type StepNumber = 1 | 2 | 3 | 4 | 5;
+type StepNumber = 1 | 2 | 3 | 4;
 type FormErrors = Record<string, string[]>;
 
-const STEP_ICONS = [Building2, Sparkles, Cpu, ClipboardCheck, CreditCard];
+const STEP_ICONS = [Building2, Cpu, ClipboardCheck, CreditCard];
 
 export function OnboardingForm({
   dictionary,
@@ -39,20 +37,14 @@ export function OnboardingForm({
 
   const steps = [
     { number: 1, label: dict.stepper_label_1, desc: dict.step_1_desc },
-    { number: 2, label: dict.stepper_label_2, desc: dict.step_2_desc },
-    { number: 3, label: dict.stepper_label_3, desc: dict.step_3_desc },
-    { number: 4, label: dict.stepper_label_4, desc: dict.step_4_desc },
-    { number: 5, label: dict.stepper_label_5, desc: dict.step_5_desc },
+    { number: 2, label: dict.stepper_label_3, desc: dict.step_3_desc },
+    { number: 3, label: dict.stepper_label_4, desc: dict.step_4_desc },
+    { number: 4, label: dict.stepper_label_5, desc: dict.step_5_desc },
   ];
 
   const [currentStep, setCurrentStep] = useState<StepNumber>(1);
   const [formData, setFormData] = useState<Partial<OnboardingFormData>>(initialData);
   const [errors, setErrors] = useState<FormErrors>({});
-
-  // MVP state (tout en local, pas de Supabase)
-  const [canvas, setCanvas] = useState<MvpCanvas | null>(null);
-  const [estimation, setEstimation] = useState<AiEstimation | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
 
   const validateStep = useCallback(
     (step: StepNumber): boolean => {
@@ -63,7 +55,7 @@ export function OnboardingForm({
             sector: formData.sector,
             problem_description: formData.problem_description,
           });
-        } else if (step === 3) {
+        } else if (step === 2) {
           Step3Schema.parse({
             existing_stack: formData.existing_stack,
             tech_constraints: formData.tech_constraints,
@@ -94,54 +86,14 @@ export function OnboardingForm({
     []
   );
 
-  const handleCanvasUpdate = useCallback(
-    (updatedCanvas: MvpCanvas) => {
-      setCanvas(updatedCanvas);
-    },
-    []
-  );
-
-  const generateMvp = useCallback(async () => {
-    setIsGenerating(true);
-    setErrors({});
-
-    try {
-      const response = await fetch('/api/ai/generate-mvp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ formData }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Échec de la génération du MVP');
-      }
-
-      const result = await response.json();
-      setCanvas(result.canvas);
-      if (result.estimation) {
-        setEstimation(result.estimation);
-      }
-    } catch (error) {
-      console.error('Error generating MVP:', error);
-      setErrors({
-        submit: [error instanceof Error ? error.message : 'Une erreur est survenue'],
-      });
-    } finally {
-      setIsGenerating(false);
-    }
-  }, [formData]);
-
   const handleNext = useCallback((): void => {
     if (currentStep === 1) {
       if (!validateStep(1)) return;
-      setCurrentStep(2);
-      if (!canvas) {
-        generateMvp();
-      }
-    } else if (currentStep < 5) {
+    }
+    if (currentStep < 4) {
       setCurrentStep((prev) => (prev + 1) as StepNumber);
     }
-  }, [currentStep, validateStep, generateMvp, canvas]);
+  }, [currentStep, validateStep]);
 
   const handleBack = useCallback((): void => {
     if (currentStep > 1) {
@@ -150,6 +102,20 @@ export function OnboardingForm({
   }, [currentStep]);
 
   const progressPercent = ((currentStep - 1) / (steps.length - 1)) * 100;
+
+  // Map step labels for title display
+  const stepDictKeys: Record<number, string> = {
+    1: 'step_1',
+    2: 'step_3',
+    3: 'step_4',
+    4: 'step_5',
+  };
+  const stepDescKeys: Record<number, string> = {
+    1: 'step_1_desc',
+    2: 'step_3_desc',
+    3: 'step_4_desc',
+    4: 'step_5_desc',
+  };
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
@@ -178,7 +144,7 @@ export function OnboardingForm({
                 }}
                 disabled={!isClickable}
                 className={cn(
-                  'flex flex-col items-center gap-2 group w-1/5',
+                  'flex flex-col items-center gap-2 group w-1/4',
                   isClickable && 'cursor-pointer'
                 )}
               >
@@ -218,10 +184,10 @@ export function OnboardingForm({
       {/* Step title */}
       <div className="text-center space-y-1">
         <h2 className="text-xl font-bold tracking-tight">
-          {dict[`step_${currentStep}`]}
+          {dict[stepDictKeys[currentStep]]}
         </h2>
         <p className="text-sm text-muted-foreground">
-          {dict[`step_${currentStep}_desc`]}
+          {dict[stepDescKeys[currentStep]]}
         </p>
       </div>
 
@@ -237,18 +203,6 @@ export function OnboardingForm({
         )}
 
         {currentStep === 2 && (
-          <MvpStep
-            clientId={null}
-            mvpId={null}
-            canvas={canvas}
-            estimation={estimation}
-            isGenerating={isGenerating}
-            onCanvasUpdate={handleCanvasUpdate}
-            dictionary={dictionary}
-          />
-        )}
-
-        {currentStep === 3 && (
           <TechConstraints
             data={formData}
             onChange={handleStepChange}
@@ -257,7 +211,7 @@ export function OnboardingForm({
           />
         )}
 
-        {currentStep === 4 && (
+        {currentStep === 3 && (
           <ProjectScoping
             data={formData}
             onChange={handleStepChange}
@@ -265,44 +219,32 @@ export function OnboardingForm({
           />
         )}
 
-        {currentStep === 5 && (
+        {currentStep === 4 && (
           <PaymentStep dictionary={dictionary} />
         )}
       </div>
 
       {/* Navigation Buttons */}
-      {!isGenerating && (
-        <div className="flex gap-4 pt-2">
+      <div className="flex gap-4 pt-2">
+        <Button
+          onClick={handleBack}
+          variant="outline"
+          className="flex-1 h-12 gap-2 text-base"
+          disabled={currentStep === 1}
+        >
+          <ChevronLeft className="h-4 w-4" />
+          {commonDict.button_back}
+        </Button>
+        {currentStep < 4 && (
           <Button
-            onClick={handleBack}
-            variant="outline"
+            onClick={handleNext}
             className="flex-1 h-12 gap-2 text-base"
-            disabled={currentStep === 1}
           >
-            <ChevronLeft className="h-4 w-4" />
-            {commonDict.button_back}
+            {commonDict.button_next}
+            <ChevronRight className="h-4 w-4" />
           </Button>
-          {currentStep < 5 && (
-            <Button
-              onClick={handleNext}
-              className="flex-1 h-12 gap-2 text-base"
-              disabled={currentStep === 2 && !canvas}
-            >
-              {currentStep === 1 ? (
-                <>
-                  <Sparkles className="h-4 w-4" />
-                  {dict.generate_mvp}
-                </>
-              ) : (
-                <>
-                  {commonDict.button_next}
-                  <ChevronRight className="h-4 w-4" />
-                </>
-              )}
-            </Button>
-          )}
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Submit Error */}
       {errors.submit && (

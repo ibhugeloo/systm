@@ -1,15 +1,13 @@
 import { Client } from '@/types/database';
-import { MvpCanvas } from '@/types/mvp';
 import { ConversationMessage } from '@/types/database';
 
 interface HandoffPromptData {
   client: Client;
-  mvp: MvpCanvas;
   messages: ConversationMessage[];
 }
 
 export function getHandoffGenerationPrompt(data: HandoffPromptData): string {
-  const { client, mvp, messages } = data;
+  const { client, messages } = data;
 
   const recentMessages = messages.slice(-20).map(m => `[${m.sender_role}]: ${m.content}`).join('\n');
 
@@ -22,9 +20,6 @@ Client Context:
 - Budget: ${client.budget_range}
 - Timeline: ${client.timeline}
 
-MVP Canvas:
-${JSON.stringify(mvp, null, 2)}
-
 Recent Discussion:
 ${recentMessages || 'No discussion messages'}
 
@@ -36,7 +31,7 @@ Generate a comprehensive handoff document in Markdown format with these sections
 - Key stakeholders
 
 ## Solution
-- High-level overview of the MVP solution
+- High-level overview of the solution
 - Key features and capabilities
 - User flows and interactions
 - Technical approach and architecture

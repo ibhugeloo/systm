@@ -21,19 +21,36 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  // Check auth cookie for protected routes
-  const isProtectedRoute =
+  const authCookie = request.cookies.get('systm-auth');
+  let session: { userId: string; email: string } | null = null;
+
+  if (authCookie?.value) {
+    try {
+      session = JSON.parse(authCookie.value);
+    } catch {
+      // Invalid cookie
+    }
+  }
+
+  // Dashboard, settings, team routes → require auth (admin or team_member)
+  const isDashboardRoute =
     pathname.startsWith(`/${LOCALE}/dashboard`) ||
     pathname.startsWith(`/${LOCALE}/team`) ||
     pathname.startsWith(`/${LOCALE}/settings`);
 
-  if (isProtectedRoute) {
-    const authCookie = request.cookies.get('systm-auth');
-    if (!authCookie?.value) {
-      return NextResponse.redirect(
-        new URL(`/${LOCALE}/login`, request.url)
-      );
-    }
+  // Portal routes → require auth (any role, client identified by profile)
+  const isPortalRoute = pathname.startsWith(`/${LOCALE}/portal`);
+
+  if (isDashboardRoute && !session) {
+    return NextResponse.redirect(
+      new URL(`/${LOCALE}/login`, request.url)
+    );
+  }
+
+  if (isPortalRoute && !session) {
+    return NextResponse.redirect(
+      new URL(`/${LOCALE}/login`, request.url)
+    );
   }
 
   return NextResponse.next({ request: { headers: request.headers } });

@@ -8,6 +8,8 @@ export type Profile = {
   full_name: string;
   role: 'admin' | 'team_member' | 'client';
   avatar_url: string | null;
+  password_hash: string | null;
+  settings: Record<string, unknown> | null;
   created_at: string;
 }
 
@@ -33,6 +35,7 @@ export type Mvp = {
   version: number;
   canvas_data: Record<string, unknown> | null;
   generated_prompt: string | null;
+  figma_url: string | null;
   status: 'draft' | 'presenting' | 'finalized';
   created_at: string;
   updated_at: string;

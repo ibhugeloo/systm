@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, FolderKanban, FileText, Calendar, MessageCircle, Layout } from 'lucide-react';
+import { LogOut, FolderKanban, FileText, Calendar, MessageCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,7 +17,6 @@ import {
 
 const NAV_ITEMS_ACTIVE = [
   { href: '/portal', label: 'Projet', icon: FolderKanban },
-  { href: '/portal/mockup', label: 'Maquette', icon: Layout },
   { href: '/portal/support', label: 'Support', icon: MessageCircle },
   { href: '/portal/requests', label: 'Requêtes', icon: FileText },
   { href: '/portal/booking', label: 'Rendez-vous', icon: Calendar },

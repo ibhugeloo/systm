@@ -19,38 +19,40 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Static admin profile for local use
-const ADMIN_PROFILE: Profile = {
-  id: 'local-admin-goat',
-  email: 'goat@systm.re',
-  full_name: 'Admin GOAT',
-  role: 'admin',
-  avatar_url: null,
-  created_at: new Date().toISOString(),
-};
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const hasAuth = document.cookie.includes('systm-auth=');
-    setIsLoggedIn(hasAuth);
-    setIsLoading(false);
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          const data = await res.json();
+          setProfile(data as Profile);
+        }
+      } catch {
+        // Not authenticated
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
   }, []);
 
   const handleSignOut = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
-    setIsLoggedIn(false);
+    setProfile(null);
     window.location.href = '/fr/login';
   };
 
   return (
     <AuthContext.Provider
       value={{
-        user: isLoggedIn ? { id: ADMIN_PROFILE.id, email: ADMIN_PROFILE.email } : null,
-        profile: isLoggedIn ? ADMIN_PROFILE : null,
-        role: isLoggedIn ? 'admin' : null,
+        user: profile ? { id: profile.id, email: profile.email } : null,
+        profile,
+        role: profile?.role || null,
         isLoading,
         signOut: handleSignOut,
       }}

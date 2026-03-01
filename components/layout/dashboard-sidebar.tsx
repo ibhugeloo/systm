@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, LayoutDashboard, Users, UserCog, Settings, LogOut } from 'lucide-react';
+import { Menu, X, LayoutDashboard, Users, FolderKanban, Sparkles, UserPlus, Settings, LogOut } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -14,31 +14,15 @@ interface NavItem {
   label: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
-  adminOnly?: boolean;
 }
 
 const navItems: NavItem[] = [
-  {
-    label: 'Tableau de bord',
-    href: '/dashboard',
-    icon: LayoutDashboard,
-  },
-  {
-    label: 'Clients',
-    href: '/dashboard/clients',
-    icon: Users,
-  },
-  {
-    label: 'Équipe',
-    href: '/team',
-    icon: UserCog,
-    adminOnly: true,
-  },
-  {
-    label: 'Paramètres',
-    href: '/settings',
-    icon: Settings,
-  },
+  { label: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard },
+  { label: 'Clients', href: '/dashboard/clients', icon: Users },
+  { label: 'Projets', href: '/dashboard/projects', icon: FolderKanban },
+  { label: 'MVP', href: '/dashboard/mvps', icon: Sparkles },
+  { label: 'Utilisateurs', href: '/dashboard/users', icon: UserPlus },
+  { label: 'Paramètres', href: '/settings', icon: Settings },
 ];
 
 export function DashboardSidebar() {
@@ -46,9 +30,7 @@ export function DashboardSidebar() {
   const pathname = usePathname();
   const { profile, signOut } = useAuth();
 
-  const isAdminOrTeamMember = profile?.role === 'admin' || profile?.role === 'team_member';
-
-  const visibleItems = navItems.filter((item) => !item.adminOnly || isAdminOrTeamMember);
+  const visibleItems = navItems;
 
   const handleNavClick = () => {
     setOpen(false);
@@ -88,7 +70,9 @@ export function DashboardSidebar() {
           {/* Navigation */}
           <nav className="flex-1 space-y-1">
             {visibleItems.map((item) => {
-              const isActive = pathname.includes(item.href);
+              const isActive = item.href === '/dashboard'
+                ? pathname.replace(/^\/[a-z]{2}/, '') === '/dashboard'
+                : pathname.includes(item.href);
               const Icon = item.icon;
 
               return (
