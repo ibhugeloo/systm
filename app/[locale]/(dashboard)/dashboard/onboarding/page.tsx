@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ClipboardCheck, Eye, Building2 } from 'lucide-react';
+import { ClipboardCheck, Eye, Building2, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 interface OnboardingPageProps {
@@ -61,11 +61,19 @@ export default async function OnboardingListPage({ params }: OnboardingPageProps
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Onboarding</h1>
-        <p className="text-muted-foreground mt-1">
-          Suivi de progression par projet ({count} projet{count > 1 ? 's' : ''})
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Onboarding</h1>
+          <p className="text-muted-foreground mt-1">
+            Suivi de progression par projet ({count} projet{count > 1 ? 's' : ''})
+          </p>
+        </div>
+        <Link href={`/${locale}/dashboard/onboarding/new`}>
+          <Button className="gap-2 shadow-sm">
+            <Plus className="h-4 w-4" />
+            Créer un Onboarding
+          </Button>
+        </Link>
       </div>
 
       {/* Onboarding Cards */}
@@ -75,7 +83,13 @@ export default async function OnboardingListPage({ params }: OnboardingPageProps
             <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-4">
               <ClipboardCheck className="h-6 w-6 text-muted-foreground" />
             </div>
-            <p className="text-muted-foreground">Aucun projet en cours</p>
+            <p className="text-muted-foreground mb-4">Aucun onboarding en cours</p>
+            <Link href={`/${locale}/dashboard/onboarding/new`}>
+              <Button className="gap-2">
+                <Plus className="h-4 w-4" />
+                Créer un Onboarding
+              </Button>
+            </Link>
           </CardContent>
         </Card>
       ) : (
