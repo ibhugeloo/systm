@@ -2,15 +2,14 @@
 
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { ProblemCapture } from './problem-capture';
 import { TechConstraints } from './tech-constraints';
 import { ProjectScoping } from './project-scoping';
 import { PaymentStep } from './payment-step';
 import { cn } from '@/lib/utils';
 import { OnboardingFormData } from '@/types/onboarding';
-import { Step1Schema, Step3Schema } from '@/lib/validation/onboarding-schemas';
+import { Step3Schema } from '@/lib/validation/onboarding-schemas';
 import { ZodError } from 'zod';
-import { Building2, Cpu, ClipboardCheck, CreditCard, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Cpu, ClipboardCheck, CreditCard, ChevronRight, ChevronLeft } from 'lucide-react';
 
 interface Dictionary {
   onboarding: Record<string, string>;
@@ -24,24 +23,22 @@ interface OnboardingFormProps {
   initialData?: Partial<OnboardingFormData>;
 }
 
-type StepNumber = 1 | 2 | 3 | 4;
+type StepNumber = 1 | 2 | 3;
 type FormErrors = Record<string, string[]>;
 
-const STEP_ICONS = [Building2, Cpu, ClipboardCheck, CreditCard];
+const STEP_ICONS = [Cpu, ClipboardCheck, CreditCard];
 
 export function OnboardingForm({
   dictionary,
-  clients,
   initialData = {},
 }: OnboardingFormProps): React.ReactElement {
   const dict = dictionary.onboarding;
   const commonDict = dictionary.common;
 
   const steps = [
-    { number: 1, label: dict.stepper_label_1, desc: dict.step_1_desc },
-    { number: 2, label: dict.stepper_label_3, desc: dict.step_3_desc },
-    { number: 3, label: dict.stepper_label_4, desc: dict.step_4_desc },
-    { number: 4, label: dict.stepper_label_5, desc: dict.step_5_desc },
+    { number: 1, label: dict.stepper_label_3, desc: dict.step_3_desc },
+    { number: 2, label: dict.stepper_label_4, desc: dict.step_4_desc },
+    { number: 3, label: dict.stepper_label_5, desc: dict.step_5_desc },
   ];
 
   const [currentStep, setCurrentStep] = useState<StepNumber>(1);
@@ -52,13 +49,6 @@ export function OnboardingForm({
     (step: StepNumber): boolean => {
       try {
         if (step === 1) {
-          Step1Schema.parse({
-            client_id: formData.client_id,
-            company_name: formData.company_name,
-            sector: formData.sector,
-            problem_description: formData.problem_description,
-          });
-        } else if (step === 2) {
           Step3Schema.parse({
             existing_stack: formData.existing_stack,
             tech_constraints: formData.tech_constraints,
@@ -90,13 +80,10 @@ export function OnboardingForm({
   );
 
   const handleNext = useCallback((): void => {
-    if (currentStep === 1) {
-      if (!validateStep(1)) return;
-    }
-    if (currentStep < 4) {
+    if (currentStep < 3) {
       setCurrentStep((prev) => (prev + 1) as StepNumber);
     }
-  }, [currentStep, validateStep]);
+  }, [currentStep]);
 
   const handleBack = useCallback((): void => {
     if (currentStep > 1) {
@@ -106,28 +93,25 @@ export function OnboardingForm({
 
   const progressPercent = ((currentStep - 1) / (steps.length - 1)) * 100;
 
-  // Map step labels for title display
   const stepDictKeys: Record<number, string> = {
-    1: 'step_1',
-    2: 'step_3',
-    3: 'step_4',
-    4: 'step_5',
+    1: 'step_3',
+    2: 'step_4',
+    3: 'step_5',
   };
   const stepDescKeys: Record<number, string> = {
-    1: 'step_1_desc',
-    2: 'step_3_desc',
-    3: 'step_4_desc',
-    4: 'step_5_desc',
+    1: 'step_3_desc',
+    2: 'step_4_desc',
+    3: 'step_5_desc',
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
       {/* Stepper */}
       <div className="relative">
-        <div className="absolute top-6 left-[calc(10%)] right-[calc(10%)] h-0.5 bg-border" />
+        <div className="absolute top-6 left-[calc(15%)] right-[calc(15%)] h-0.5 bg-border" />
         <div
-          className="absolute top-6 left-[calc(10%)] h-0.5 bg-primary transition-all duration-500 ease-out"
-          style={{ width: `${progressPercent * 0.8}%` }}
+          className="absolute top-6 left-[calc(15%)] h-0.5 bg-primary transition-all duration-500 ease-out"
+          style={{ width: `${progressPercent * 0.7}%` }}
         />
 
         <div className="relative flex justify-between">
@@ -147,7 +131,7 @@ export function OnboardingForm({
                 }}
                 disabled={!isClickable}
                 className={cn(
-                  'flex flex-col items-center gap-2 group w-1/4',
+                  'flex flex-col items-center gap-2 group w-1/3',
                   isClickable && 'cursor-pointer'
                 )}
               >
@@ -197,16 +181,6 @@ export function OnboardingForm({
       {/* Form Content */}
       <div className="animate-fadeIn">
         {currentStep === 1 && (
-          <ProblemCapture
-            data={formData}
-            onChange={handleStepChange}
-            dictionary={dictionary}
-            clients={clients}
-            errors={errors}
-          />
-        )}
-
-        {currentStep === 2 && (
           <TechConstraints
             data={formData}
             onChange={handleStepChange}
@@ -215,7 +189,7 @@ export function OnboardingForm({
           />
         )}
 
-        {currentStep === 3 && (
+        {currentStep === 2 && (
           <ProjectScoping
             data={formData}
             onChange={handleStepChange}
@@ -223,7 +197,7 @@ export function OnboardingForm({
           />
         )}
 
-        {currentStep === 4 && (
+        {currentStep === 3 && (
           <PaymentStep dictionary={dictionary} />
         )}
       </div>
@@ -239,7 +213,7 @@ export function OnboardingForm({
           <ChevronLeft className="h-4 w-4" />
           {commonDict.button_back}
         </Button>
-        {currentStep < 4 && (
+        {currentStep < 3 && (
           <Button
             onClick={handleNext}
             className="flex-1 h-12 gap-2 text-base"
